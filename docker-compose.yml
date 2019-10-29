@@ -1,12 +1,17 @@
 version: '3'
 services:
-  web:
+  # server:
+  #   build: .
+  #   ports:
+  #     - "5000:5000"
+  #   volumes:
+  #     - '.:/Back'
+  #   environment:
+  #     FLASK_ENV: development
+  app:
     build: .
     ports:
       - "8080:8080"
     volumes:
-      - .:/Src
-    environment:
-      FLASK_ENV: development
-  redis:
-    image: "redis:alpine"
+      - '.:/front'
+      - '/front/node_modules'
