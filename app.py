@@ -30,9 +30,9 @@ def hello():
 def about():
     ip = socket.gethostbyname(socket.gethostname())
     timespent = int(time.time())
-    with open('about.json') as json_file:
+    with open('about.json', 'r') as json_file:
         data = json.load(json_file)
         data['client']['host'] = ip
         data['server']['current_time'] = timespent
-        # json.dump(data, json_file)
-        return data
+
+    return data
