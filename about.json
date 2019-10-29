@@ -1,0 +1,84 @@
+{
+    "client": {
+        "host": "10.101.53.35"
+    },
+    "server": {
+        "current_time": 1531680780,
+        "services": [{
+            "name": "twitch",
+            "widgets": [{
+                "name": "live_viewer",
+                "description": "Affichage du nombre de viewer du live d'un streamer",
+                "params": [{
+                    "name": "streamer",
+                    "type": "string"
+                }]
+            }, {
+                "name": "live_chat",
+                "description": "Affichage du chat du live d'un streamer",
+                "params": [{
+                    "name": "streamer",
+                    "type": "string"
+                }]
+            }, {
+                "name": "streamer_sub",
+                "description": "Affichage du nombre d'abonné d'un streamer",
+                "params": [{
+                    "name": "streamer",
+                    "type": "string"
+                }]
+            }]
+        }, {
+            "name": "intra_epitech",
+            "widgets": [{
+                "name": "module_info",
+                "description": "Affichage des informations liées à un module",
+                "params": [{
+                    "name": "module",
+                    "type": "string"
+                }]
+            }, {
+                "name": "activities",
+                "description": "Affichage des activitées à une date précise",
+                "params": [{
+                    "name": "date",
+                    "type": "string"
+                }]
+            }, {
+                "name": "netsoul",
+                "description": "Affichage du temps de présence à une date ou une semaine précise",
+                "params": [{
+                    "name": "date",
+                    "type": "string"
+                }]
+            }, {
+                "name": "flags",
+                "description": "Affichage des différents flags de l'étudiant",
+                "params": [{
+                    "name": "flag_type",
+                    "type": "string"
+                }]
+            }, {
+                "name": "unregistered_instances",
+                "description": "Affichage des instances (activités, projets, modules) auxquels l'étudiant n'est pas inscrit",
+                "params": [{
+                    "name": "instance_type",
+                    "type": "string"
+                }]
+            }]
+        }, {
+            "name": "rss",
+            "widgets": [{
+                "name": "article_list",
+                "description": "Affichage de la liste des derniers articles",
+                "params": [{
+                    "name": "link",
+                    "type": "string"
+                }, {
+                    "name": "number",
+                    "type": "integer"
+                }]
+            }]
+        }]
+    }
+}
