@@ -4,11 +4,13 @@ import socket
 import pyrebase
 
 from flask import Flask
+from templates.login import login_page
 
 app = Flask(__name__)
+app.register_blueprint(login_page)
 
 @app.route('/')
-def hello():
+def index():
     config = {
         "apiKey": "AIzaSyBTjwyIi20T5CKnXJryAe5aJ1U6u5CHkeY",
         "authDomain": "dashboard-5d0a1.firebaseapp.com",
@@ -24,7 +26,7 @@ def hello():
 def about():
     ip = socket.gethostbyname(socket.gethostname())
     timespent = int(time.time())
-    with open('Back/about.json', 'r') as json_file:
+    with open('server/about.json', 'r') as json_file:
         data = json.load(json_file)
         data['client']['host'] = ip
         data['server']['current_time'] = timespent

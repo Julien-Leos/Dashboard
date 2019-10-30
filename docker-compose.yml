@@ -1,17 +1,17 @@
 version: '3'
 services:
-  # server:
-  #   build: .
-  #   ports:
-  #     - "5000:5000"
-  #   volumes:
-  #     - '.:/Back'
-  #   environment:
-  #     FLASK_ENV: development
+  server:
+    build: ./server
+    ports:
+      - "5000:5000"
+    volumes:
+      - '.:/server'
+    environment:
+      FLASK_ENV: development
   app:
-    build: .
+    build: ./app
     ports:
       - "8080:8080"
     volumes:
-      - '.:/front'
-      - '/front/node_modules'
+      - '/app/node_modules'
+      - './app:/app'

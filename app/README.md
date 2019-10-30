@@ -1,4 +1,4 @@
-# front
+# app
 
 ## Project setup
 ```
