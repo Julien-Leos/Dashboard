@@ -5,7 +5,7 @@
 </template>
 
 <script>
-const axios = require('axios');
+const axios = require("axios");
 
 export default {
   name: "app",
