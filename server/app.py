@@ -21,6 +21,7 @@ def index():
     db = firebase.database()
     test = db.child('users').child('0').get()
     return test.val()
+    # return 'TOTO'
 
 @app.route('/about.json')
 def about():

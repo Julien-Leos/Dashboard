@@ -1,17 +1,23 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    {{info}}
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+const axios = require('axios');
 
 export default {
   name: "app",
-  components: {
-    HelloWorld
+  data: () => {
+    return {
+      info: 4
+    };
+  },
+  mounted() {
+    axios
+      .get("https://api.coindesk.com/v1/bpi/currentprice.json")
+      .then(response => (this.info = response));
   }
 };
 </script>
