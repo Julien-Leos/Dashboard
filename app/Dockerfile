@@ -1,6 +1,4 @@
-FROM node:lts-alpine
-WORKDIR /app
-COPY . /app
-RUN yarn install --force
-EXPOSE 8080
-CMD ["yarn", "serve"]
+FROM python:3
+WORKDIR /server
+COPY . /server
+CMD ["yarn", "dev"]

@@ -4,9 +4,11 @@ import socket
 import pyrebase
 
 from flask import Flask
+from flask_cors import CORS
 from templates.login import login_page
 
 app = Flask(__name__)
+CORS(app)
 app.register_blueprint(login_page)
 
 @app.route('/')
@@ -21,7 +23,6 @@ def index():
     db = firebase.database()
     test = db.child('users').child('0').get()
     return test.val()
-    # return 'TOTO'
 
 @app.route('/about.json')
 def about():
