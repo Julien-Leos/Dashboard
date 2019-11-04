@@ -1,8 +1,6 @@
-FROM python:3.7-alpine
-WORKDIR /server/
-ENV FLASK_APP app.py
-ENV FLASK_RUN_HOST 0.0.0.0
-COPY ./requirements.txt .
-RUN apk add --no-cache gcc musl-dev linux-headers
+FROM python:3
+WORKDIR /server
+COPY . /server
 RUN pip install -r requirements.txt
-CMD ["flask", "run"]
+EXPOSE 5000
+CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
