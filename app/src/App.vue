@@ -1,23 +1,16 @@
 <template>
   <div id="app">
-    {{info}}
+    <HelloWorld msg="Coucou ca va comment" />
   </div>
 </template>
 
 <script>
-const axios = require("axios");
+import HelloWorld from "./components/HelloWorld";
 
 export default {
   name: "app",
-  data: () => {
-    return {
-      info: 4
-    };
-  },
-  mounted() {
-    axios
-      .get("https://api.coindesk.com/v1/bpi/currentprice.json")
-      .then(response => (this.info = response));
+  components: {
+    HelloWorld
   }
 };
 </script>
