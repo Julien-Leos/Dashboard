@@ -40,19 +40,24 @@ export default {
         config: { headers: { "Content-Type": "multipart/form-data" } }
       })
         .then(response => {
-          this.$message({
-            showClose: true,
-            message: response.data,
-            type: "success"
-          });
-          this.$router.push("/home");
+          if (response) {
+            this.$message({
+              showClose: true,
+              message: response.data.message,
+              type: "success"
+            });
+            this.$store.commit("auth/update", response.data.data.access_token);
+            this.$router.push("/home");
+          }
         })
         .catch(error => {
-          this.$message({
-            showClose: true,
-            message: error.response.data,
-            type: "error"
-          });
+          if (error.response) {
+            this.$message({
+              showClose: true,
+              message: error.response.data.message,
+              type: "error"
+            });
+          }
         });
     }
   }

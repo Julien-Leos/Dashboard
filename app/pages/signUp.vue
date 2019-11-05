@@ -48,7 +48,7 @@ export default {
         .then(response => {
           this.$message({
             showClose: true,
-            message: response.data,
+            message: response.data.message,
             type: "success"
           });
           this.$router.push("/home");
@@ -56,7 +56,7 @@ export default {
         .catch(error => {
           this.$message({
             showClose: true,
-            message: error.response.data,
+            message: error.response.data.message,
             type: "error"
           });
         });
