@@ -1,35 +1,18 @@
-import time
-import json
-import socket
-import pyrebase
-
 from flask import Flask
 from flask_cors import CORS
-from templates.login import login_page
+
+from sign import sign_page
+from about import about_page
 
 app = Flask(__name__)
 CORS(app)
-app.register_blueprint(login_page)
+
+app.register_blueprint(sign_page)
+app.register_blueprint(about_page)
+
+def getChildItems(child):
+    return list(child.get().val().items())
 
 @app.route('/')
 def index():
-    config = {
-        "apiKey": "AIzaSyBTjwyIi20T5CKnXJryAe5aJ1U6u5CHkeY",
-        "authDomain": "dashboard-5d0a1.firebaseapp.com",
-        "databaseURL": "https://dashboard-5d0a1.firebaseio.com",
-        "storageBucket": "dashboard-5d0a1.appspot.com"
-    }
-    firebase = pyrebase.initialize_app(config)
-    db = firebase.database()
-    test = db.child('users').child('0').get()
-    return test.val()
-
-@app.route('/about.json')
-def about():
-    ip = socket.gethostbyname(socket.gethostname())
-    timespent = int(time.time())
-    with open('about.json', 'r') as json_file:
-        data = json.load(json_file)
-        data['client']['host'] = ip
-        data['server']['current_time'] = timespent
-    return data
+    return "Hello World!"
