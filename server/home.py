@@ -12,9 +12,6 @@ home_page = Blueprint('home_page', __name__)
 @home_page.route('/home', methods=["GET"])
 def home():
     if request.method == "GET":
-        print("----TOTO----\n")
-        print(request.headers)
-        print("\n----TATA----")
         header = request.headers
         users = app.getChildItems(database.child('users'))
 

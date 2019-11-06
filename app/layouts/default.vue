@@ -1,7 +1,12 @@
 <template>
   <div>
     <el-container>
-      <el-header><Header /></el-header>
+      <el-header height="8vh"><Header /></el-header>
+    </el-container>
+    <el-container style="height: 100vh">
+      <el-aside v-show="isMenuDisplayed" :width="menuWidth + 'vh'"
+        ><Menu @onCollapse="updateWidth"
+      /></el-aside>
       <el-main><nuxt /></el-main>
     </el-container>
   </div>
@@ -9,10 +14,37 @@
 
 <script>
 import Header from "../components/Header";
+import Menu from "../components/Menu";
 
 export default {
   components: {
-    Header
+    Header,
+    Menu
+  },
+  data: () => {
+    return {
+      menuWidth: 20
+    };
+  },
+  computed: {
+    isMenuDisplayed() {
+      const pageName = this.$nuxt.$route.name;
+
+      if (
+        pageName === "index" ||
+        pageName === "signIn" ||
+        pageName === "signUp"
+      )
+        return false;
+      return true;
+    }
+  },
+  methods: {
+    updateWidth(newWidth) {
+      setTimeout(() => {
+        this.menuWidth = newWidth;
+      }, 150);
+    }
   }
 };
 </script>
@@ -35,6 +67,34 @@ html {
 *:after {
   box-sizing: border-box;
   margin: 0;
+}
+
+.primary {
+  color: #3f9eff;
+}
+.bg-primary {
+  background: #3f9eff;
+}
+
+.primary-light {
+  color: #80cfff;
+}
+.bg-primary-light {
+  background: #80cfff;
+}
+
+.primary-dark {
+  color: #0070cb;
+}
+.bg-primary-dark {
+  background: #0070cb;
+}
+
+.bg-gray {
+  background: #e6e6e6;
+}
+.bg-gray-light {
+  background: #f2f2f2;
 }
 
 a {

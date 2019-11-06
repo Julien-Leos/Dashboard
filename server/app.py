@@ -4,6 +4,8 @@ from flask_cors import CORS
 from about import about_page
 from sign import sign_page
 from home import home_page
+from services import services_page
+
 
 app = Flask(__name__)
 CORS(app)
@@ -11,6 +13,7 @@ CORS(app)
 app.register_blueprint(about_page)
 app.register_blueprint(sign_page)
 app.register_blueprint(home_page)
+app.register_blueprint(services_page)
 
 
 def getChildItems(child):

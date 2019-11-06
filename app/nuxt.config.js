@@ -27,7 +27,11 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ["@/plugins/element-ui", { src: "~/plugins/vue-grid", ssr: false }],
+  plugins: [
+    "@/plugins/utils",
+    "@/plugins/element-ui",
+    { src: "~/plugins/vue-grid", ssr: false }
+  ],
   /*
    ** Nuxt.js dev-modules
    */
@@ -40,6 +44,21 @@ export default {
    */
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
+    [
+      "nuxt-fontawesome",
+      {
+        imports: [
+          {
+            set: "@fortawesome/free-solid-svg-icons",
+            icons: ["fas"]
+          },
+          {
+            set: "@fortawesome/free-brands-svg-icons",
+            icons: ["fab"]
+          }
+        ]
+      }
+    ],
     "@nuxtjs/axios",
     "@nuxtjs/pwa",
     ["nuxt-vuex-localstorage", { mode: "debug", localStorage: ["auth"] }]

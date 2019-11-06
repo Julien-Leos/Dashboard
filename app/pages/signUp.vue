@@ -24,7 +24,6 @@
 const axios = require("axios");
 
 export default {
-  name: "SignUp",
   data: () => {
     return {
       form: {

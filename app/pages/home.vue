@@ -32,7 +32,6 @@ import Widget from "../components/Widget/Widget";
 const axios = require("axios");
 
 export default {
-  name: "Home",
   middleware: "auth",
   components: {
     Widget

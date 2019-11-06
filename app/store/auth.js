@@ -1,9 +1,15 @@
 export const state = () => ({
-  accessToken: ""
+  accessToken: "",
+  username: ""
 });
 
 export const mutations = {
-  update(state, token) {
-    state.accessToken = token;
+  signIn(state, data) {
+    state.accessToken = data.token;
+    state.username = data.username;
+  },
+  signOut(state) {
+    state.accessToken = "";
+    state.username = "";
   }
 };

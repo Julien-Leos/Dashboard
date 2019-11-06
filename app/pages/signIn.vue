@@ -18,7 +18,6 @@
 const axios = require("axios");
 
 export default {
-  name: "SignIn",
   data: () => {
     return {
       form: {
@@ -46,7 +45,10 @@ export default {
               message: response.data.message,
               type: "success"
             });
-            this.$store.commit("auth/update", response.data.data.accessToken);
+            this.$store.commit("auth/signIn", {
+              token: response.data.data.accessToken,
+              username: this.form.email
+            });
             this.$router.push("/home");
           }
         })
