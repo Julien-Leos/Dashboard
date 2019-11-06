@@ -46,7 +46,7 @@ export default {
               message: response.data.message,
               type: "success"
             });
-            this.$store.commit("auth/update", response.data.data.access_token);
+            this.$store.commit("auth/update", response.data.data.accessToken);
             this.$router.push("/home");
           }
         })

@@ -1,7 +1,9 @@
+const axios = require("axios");
+
 export default function({ store, redirect }) {
-  console.log("MIDDLEWARE", store.state);
-  if (!store.state.auth.access_token) {
-    console.log("REDIRECT");
-    // return redirect("/signIn");
+  if (!store.state.auth.accessToken) {
+    axios.defaults.headers.Authorization = "";
+    return redirect("/signIn");
   }
+  axios.defaults.headers.Authorization = store.state.auth.accessToken;
 }

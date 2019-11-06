@@ -24,7 +24,7 @@ def signUp():
                 return jsonify({"message": "Error: A user with the same email already exist"}), status.HTTP_400_BAD_REQUEST
 
         database.child('users').push(
-            {"email": data["email"], "password": data["password"], "access_token": "None"})
+            {"email": data["email"], "password": data["password"], "accessToken": "None"})
         return jsonify({"message": "User successfully created"}), status.HTTP_200_OK
 
 
@@ -38,8 +38,8 @@ def signIn():
             return jsonify({"message": "Error: One of the credentials is empty"}), status.HTTP_400_BAD_REQUEST
         for user in users:
             if user[1]["email"] == data["email"] and user[1]["password"] == data["password"]:
-                access_token = secrets.token_hex(16)
+                accessToken = secrets.token_hex(16)
                 database.child('users').child(user[0]).update(
-                    {"access_token": access_token})
-                return jsonify({"message": "User successfully connected", "data": {"access_token": access_token}}), status.HTTP_200_OK
+                    {"accessToken": accessToken})
+                return jsonify({"message": "User successfully connected", "data": {"accessToken": accessToken}}), status.HTTP_200_OK
         return jsonify({"message": "One of the credentials is invalid."}), status.HTTP_400_BAD_REQUEST

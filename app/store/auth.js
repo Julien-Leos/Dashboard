@@ -1,9 +1,9 @@
 export const state = () => ({
-  access_token: ""
+  accessToken: ""
 });
 
 export const mutations = {
   update(state, token) {
-    state.access_token = token;
+    state.accessToken = token;
   }
 };
