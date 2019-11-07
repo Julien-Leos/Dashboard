@@ -9,9 +9,9 @@ import app
 services_page = Blueprint('services_page', __name__)
 
 
-@services_page.route('/services', defaults={'name': None}, methods=["GET", "POST", "PUT", "DELETE"])
-@services_page.route('/services/<name>', methods=["GET", "POST", "PUT", "DELETE"])
-def services(name):
+@services_page.route('/services', defaults={'id': None}, methods=["GET", "POST"])
+@services_page.route('/services/<id>', methods=["GET", "PUT", "DELETE"])
+def services(id):
     headers = request.headers
     form = request.form.to_dict()
     users = app.getChildItems(database.child('users'))
@@ -38,19 +38,14 @@ def services(name):
         return jsonify({"message": "User not authorized"}), status.HTTP_401_UNAUTHORIZED
 
     if request.method != "GET":
-        if name:
-            params["name"]["mandatory"] = False
         paramError = app.checkAPIParams(form, params)
         if paramError != None:
             return paramError
 
-    if name:
-        form["name"] = name.lower()
-
-    if request.method == "GET" and not name:
+    if request.method == "GET" and not id:
         return servicesList()
-    elif request.method == "GET" and name:
-        return servicesGet(form)
+    elif request.method == "GET" and id:
+        return servicesGet(form, id)
     elif request.method == "POST":
         return servicesPost(form, params)
     elif request.method == "PUT":
@@ -64,12 +59,16 @@ def servicesList():
     return jsonify({"message": "Services successfully getted", "data": {"services": services}}), status.HTTP_200_OK
 
 
-def servicesGet(form):
+def servicesGet(form, id):
     services = app.getChildItems(database.child('services'))
-    for service in services:
-        if service[1]["name"].lower() == form["name"].lower():
-            return jsonify({"message": "Service '" + form["name"] + "' successfully getted", "data": {"services": service}}), status.HTTP_200_OK
-    return jsonify({"message": "Error: Service '" + form["name"] + "' do not exist."}), status.HTTP_400_BAD_REQUEST
+    if id in services:
+        return jsonify({"message": "Service '" + services[id]["name"] + "' successfully getted", "data": {"services": services[id]}}), status.HTTP_200_OK
+    return jsonify({"message": "Error: Service '" + services[id]["name"] + "' do not exist."}), status.HTTP_400_BAD_REQUEST
+    
+    # for service in services:
+    #     if service[1]["name"].lower() == form["name"].lower():
+    #         return jsonify({"message": "Service '" + form["name"] + "' successfully getted", "data": {"services": service}}), status.HTTP_200_OK
+    # return jsonify({"message": "Error: Service '" + form["name"] + "' do not exist."}), status.HTTP_400_BAD_REQUEST
 
 
 def servicesPost(form, params):

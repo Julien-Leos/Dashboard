@@ -1,20 +1,14 @@
 <template>
-  <div class="signUpPage">
+  <div class="loginPage">
     <el-form ref="form" :model="form" label-width="10vh">
-      <el-form-item label="Email">
-        <el-input
-          v-model="form.email"
-          placeholder="Enter your email"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="Password">
-        <el-input
-          v-model="form.password"
-          placeholder="Enter a strong password"
-        ></el-input>
+      <el-form-item>
+        <el-input v-model="form.email" placeholder="Email"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">Create Account</el-button>
+        <el-input v-model="form.password" placeholder="Password"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="onSubmit">Login</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -27,7 +21,7 @@ export default {
   data: () => {
     return {
       form: {
-        email: "",
+        mail: "",
         password: ""
       }
     };
@@ -40,24 +34,32 @@ export default {
       bodyFormData.set("password", this.form.password);
       axios({
         method: "post",
-        url: "http://localhost:8080/signUp",
+        url: "http://localhost:8080/login",
         data: bodyFormData,
         config: { headers: { "Content-Type": "multipart/form-data" } }
       })
         .then(response => {
-          this.$message({
-            showClose: true,
-            message: response.data.message,
-            type: "success"
-          });
-          this.$router.push("/home");
+          if (response) {
+            this.$message({
+              showClose: true,
+              message: response.data.message,
+              type: "success"
+            });
+            this.$store.commit("auth/login", {
+              token: response.data.data.accessToken,
+              username: this.form.email
+            });
+            this.$router.push("/home");
+          }
         })
         .catch(error => {
-          this.$message({
-            showClose: true,
-            message: error.response.data.message,
-            type: "error"
-          });
+          if (error.response) {
+            this.$message({
+              showClose: true,
+              message: error.response.data.message,
+              type: "error"
+            });
+          }
         });
     }
   }
@@ -65,7 +67,7 @@ export default {
 </script>
 
 <style scoped>
-.signUpPage {
+.loginPage {
   display: flex;
   flex-direction: column;
   align-items: center;

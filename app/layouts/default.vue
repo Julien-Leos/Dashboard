@@ -32,8 +32,8 @@ export default {
 
       if (
         pageName === "index" ||
-        pageName === "signIn" ||
-        pageName === "signUp"
+        pageName === "login" ||
+        pageName === "register"
       )
         return false;
       return true;

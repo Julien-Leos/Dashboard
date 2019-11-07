@@ -9,10 +9,10 @@
       class="header-auth"
     >
       <el-button type="info" plain size="medium"
-        ><nuxt-link to="/signIn">Sign-In</nuxt-link></el-button
+        ><nuxt-link to="/login">Sign-In</nuxt-link></el-button
       >
       <el-button type="primary"
-        ><nuxt-link to="/signUp">Sign-Up</nuxt-link></el-button
+        ><nuxt-link to="/register">Sign-Up</nuxt-link></el-button
       >
     </el-col>
     <el-col
@@ -23,7 +23,7 @@
       <nuxt-link to="/home">
         {{ $store.state.auth.username.toUpperCase() }}
       </nuxt-link>
-      <el-button type="danger" @click="signOut"
+      <el-button type="danger" @click="logout"
         ><nuxt-link to="/">Sign-Out</nuxt-link></el-button
       >
     </el-col>
@@ -34,8 +34,8 @@
 export default {
   name: "Header",
   methods: {
-    signOut() {
-      this.$store.commit("auth/signOut");
+    logout() {
+      this.$store.commit("auth/logout");
     }
   }
 };

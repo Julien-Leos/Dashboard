@@ -4,11 +4,11 @@ export const state = () => ({
 });
 
 export const mutations = {
-  signIn(state, data) {
+  login(state, data) {
     state.accessToken = data.token;
     state.username = data.username;
   },
-  signOut(state) {
+  logout(state) {
     state.accessToken = "";
     state.username = "";
   }
