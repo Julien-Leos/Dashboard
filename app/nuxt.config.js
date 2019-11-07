@@ -77,5 +77,9 @@ export default {
      ** You can extend webpack config here
      */
     extend(config, ctx) {}
+  },
+  watchOptions: {
+    aggregateTimeout: 300,
+    poll: 1000
   }
 };

@@ -4,7 +4,11 @@ services:
     build: ./server
     ports:
       - "8080:8080"
+    volumes:
+      - './server:/server'
   app:
     build: ./app
     ports:
       - "3000:3000"
+    volumes:
+      - ./app:/app:rw
