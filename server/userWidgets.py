@@ -27,13 +27,13 @@ def userWidgets(userId, serviceId, widgetId):
         },
         "x": {
             "type": int,
-            "mandatory": True,
-            "default": None
+            "mandatory": False,
+            "default": 0
         },
         "y": {
             "type": int,
-            "mandatory": True,
-            "default": None
+            "mandatory": False,
+            "default": 0
         },
         "w": {
             "type": int,

@@ -1,28 +1,38 @@
 <template>
   <client-only>
-    <grid-layout
-      :layout="layout"
-      :col-num="12"
-      :row-height="30"
-      :is-draggable="true"
-      :is-resizable="true"
-      :is-mirrored="false"
-      :vertical-compact="true"
-      :margin="[10, 10]"
-      :use-css-transforms="true"
-    >
-      <grid-item
-        v-for="item in layout"
-        :key="item.i"
-        :x="item.x"
-        :y="item.y"
-        :w="item.w"
-        :h="item.h"
-        :i="item.i"
+    <div>
+      <grid-layout
+        :layout="widgets"
+        :col-num="12"
+        :row-height="30"
+        :margin="[15, 15]"
       >
-        <Widget :type="item.type" />
-      </grid-item>
-    </grid-layout>
+        <grid-item
+          v-for="widget in widgets"
+          :key="widget.i"
+          :x="widget.x"
+          :y="widget.y"
+          :w="widget.w"
+          :h="widget.h"
+          :i="widget.i"
+          @moved="movedWidget"
+          @resized="resizedWidget"
+        >
+          {{ widget.x }}
+          {{ widget.y }}
+          {{ widget.w }}
+          {{ widget.h }}
+          <Widget type="number" />
+        </grid-item>
+      </grid-layout>
+      <el-button
+        v-show="widgetsUpdates"
+        @click="saveUpdates"
+        class="saveBtn"
+        type="success"
+        >Save Updates</el-button
+      >
+    </div>
   </client-only>
 </template>
 
@@ -36,15 +46,79 @@ export default {
   },
   data: () => {
     return {
-      layout: [
-        { x: 0, y: 0, w: 4, h: 7, i: "0", type: "number" },
-        // { x: 0, y: 0, w: 1, h: 1, i: "1", type: "autre" },
-        { x: 4, y: 0, w: 2, h: 5, i: "2", type: "autre" },
-        { x: 6, y: 0, w: 2, h: 3, i: "3", type: "autre" },
-        { x: 8, y: 0, w: 2, h: 3, i: "4", type: "number" },
-        { x: 10, y: 0, w: 2, h: 3, i: "5", type: "number" }
-      ]
+      widgets: [],
+      widgetsUpdates: false
     };
+  },
+  mounted() {
+    this.$axios
+      .get("users/" + this.$store.state.auth.userId + "/services")
+      .then(response => {
+        if (response) {
+          Object.entries(response.data.data.services).forEach(service => {
+            Object.entries(service[1].widgets).forEach(widget => {
+              widget[1].serviceId = service[0];
+              widget[1].i = widget[0];
+              for (const [key, value] of Object.entries(widget[1]))
+                if (key === "x" || key === "y" || key === "h" || key === "w")
+                  widget[1][key] = parseInt(value);
+              this.widgets.push(widget[1]);
+            });
+          });
+        }
+      })
+      .catch(error => {
+        if (error.response) {
+          this.$message({
+            showClose: true,
+            message: error.response.data.message,
+            type: "error"
+          });
+        }
+      });
+  },
+  methods: {
+    movedWidget() {
+      this.widgetsUpdates = true;
+    },
+    resizedWidget() {
+      this.widgetsUpdates = true;
+    },
+    saveUpdates() {
+      for (const widget of Object.values(this.widgets)) {
+        const bodyFormData = new FormData();
+
+        bodyFormData.set("x", widget.x);
+        bodyFormData.set("y", widget.y);
+        bodyFormData.set("w", widget.w);
+        bodyFormData.set("h", widget.h);
+        this.$axios({
+          method: "put",
+          url:
+            "users/" +
+            this.$store.state.auth.userId +
+            "/services/" +
+            widget.serviceId +
+            "/widgets/" +
+            widget.i,
+          data: bodyFormData,
+          config: { headers: { "Content-Type": "multipart/form-data" } }
+        }).catch(error => {
+          if (error.response) {
+            this.$message({
+              showClose: true,
+              message: error.response.data.message,
+              type: "error"
+            });
+          }
+        });
+      }
+      this.$message({
+        showClose: true,
+        message: "Widgets's position and size successfully saved.",
+        type: "success"
+      });
+    }
   }
 };
 </script>
@@ -52,5 +126,12 @@ export default {
 <style scoped>
 .vue-grid-item {
   background-color: aqua;
+}
+.saveBtn {
+  position: absolute;
+  right: 4vh;
+  bottom: 4vh;
+  font-size: 1.2em;
+  z-index: 3;
 }
 </style>

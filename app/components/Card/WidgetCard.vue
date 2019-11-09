@@ -102,8 +102,6 @@ export default {
         const bodyFormData = new FormData();
 
         bodyFormData.set("name", this.widget.name);
-        bodyFormData.set("x", 0);
-        bodyFormData.set("y", 0);
         this.$axios({
           method: "post",
           url:
