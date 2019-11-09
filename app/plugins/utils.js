@@ -5,7 +5,7 @@ Vue.prototype.$idealTextColor = bgColor => {
 
   const yiq = (r * 299 + g * 587 + b * 114) / 1000;
 
-  return yiq >= 128 ? "4d4d4d" : "f2f2f2";
+  return yiq >= 128 ? "4d4d4d" : "ffffff";
 };
 
 Vue.prototype.$brighterColor = (color, percent) => {

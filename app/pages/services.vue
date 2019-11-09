@@ -43,8 +43,6 @@
 <script>
 import ServiceCard from "../components/Card/ServiceCard";
 
-const axios = require("axios");
-
 export default {
   middleware: "auth",
   components: {
@@ -57,9 +55,9 @@ export default {
       activatedServices: []
     };
   },
-  mounted() {
-    axios
-      .get("http://localhost:8080/services")
+  async mounted() {
+    await this.$axios
+      .get("services")
       .then(response => {
         if (response) {
           this.services = response.data.data.services;
@@ -78,21 +76,16 @@ export default {
   },
   methods: {
     getActivatedServices() {
-      axios
-        .get(
-          "http://localhost:8080/users/" +
-            this.$store.state.auth.userId +
-            "/services"
-        )
+      this.$axios
+        .get("users/" + this.$store.state.auth.userId + "/services")
         .then(response => {
           if (response) {
             this.activatedServices = [];
             this.availableServices = [];
             this.services.forEach(service => {
-              const dbActivatedServices = Object.entries(
+              const activatedService = Object.entries(
                 response.data.data.services
-              );
-              const activatedService = dbActivatedServices.find(
+              ).find(
                 dbActivatedService =>
                   dbActivatedService[1].name === service.name
               );

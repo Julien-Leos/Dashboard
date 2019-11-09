@@ -9,10 +9,8 @@
         <WidgetCard
           v-for="widget in activatedWidgets"
           v-else
-          :id="widget.id"
           :key="widget.id"
-          :name="widget['name']"
-          :color="widget['color']"
+          :widget="widget"
           :is-connected="true"
           @onConnect="getActivatedWidgets"
         />
@@ -28,8 +26,7 @@
           v-for="widget in availableWidgets"
           v-else
           :key="widget.id"
-          :name="widget['name']"
-          :color="widget['color']"
+          :widget="widget"
           :is-connected="false"
           @onConnect="getActivatedWidgets"
         />
@@ -41,8 +38,6 @@
 <script>
 import WidgetCard from "../components/Card/WidgetCard";
 
-const axios = require("axios");
-
 export default {
   middleware: "auth",
   components: {
@@ -51,15 +46,14 @@ export default {
   data: () => {
     return {
       services: {},
-      widgets: {},
       activatedServices: [],
       availableWidgets: [],
       activatedWidgets: []
     };
   },
-  mounted() {
-    axios
-      .get("http://localhost:8080/services")
+  async mounted() {
+    await this.$axios
+      .get("services")
       .then(response => {
         if (response) {
           this.services = response.data.data.services;
@@ -74,28 +68,8 @@ export default {
           });
         }
       });
-    axios
-      .get("http://localhost:8080/widgets")
-      .then(response => {
-        if (response) {
-          this.widgets = response.data.data.widgets;
-        }
-      })
-      .catch(error => {
-        if (error.response) {
-          this.$message({
-            showClose: true,
-            message: error.response.data.message,
-            type: "error"
-          });
-        }
-      });
-    axios
-      .get(
-        "http://localhost:8080/users/" +
-          this.$store.state.auth.userId +
-          "/services"
-      )
+    await this.$axios
+      .get("users/" + this.$store.state.auth.userId + "/services")
       .then(response => {
         if (response) {
           this.activatedServices = response.data.data.services;
@@ -114,41 +88,48 @@ export default {
   },
   methods: {
     getActivatedWidgets() {
-      // axios({
-      //   method: "get",
-      //   url:
-      //     "http://localhost:8080/users/" +
-      //     this.$store.state.auth.userId +
-      //     "/services"
-      // })
-      //   .then(response => {
-      //     if (response) {
-      //       this.activatedWidgets = [];
-      //       this.availableWidgets = [];
-      //       this.services.forEach(service => {
-      //         const dbActivatedWidgets = Object.entries(
-      //           response.data.data.services
-      //         );
-      //         const activatedService = dbActivatedWidgets.find(
-      //           dbActivatedService =>
-      //             dbActivatedService[1].name === service.name
-      //         );
-      //         if (activatedService) {
-      //           service.id = activatedService[0];
-      //           this.activatedWidgets.push(service);
-      //         } else this.availableWidgets.push(service);
-      //       });
-      //     }
-      //   })
-      //   .catch(error => {
-      //     if (error.response) {
-      //       this.$message({
-      //         showClose: true,
-      //         message: error.response.data.message,
-      //         type: "error"
-      //       });
-      //     }
-      //   });
+      this.activatedWidgets = [];
+      this.availableWidgets = [];
+      Object.entries(this.activatedServices).forEach(activatedService => {
+        this.$axios
+          .get(
+            "users/" +
+              this.$store.state.auth.userId +
+              "/services/" +
+              activatedService[0] +
+              "/widgets"
+          )
+          .then(response => {
+            if (response) {
+              const service = this.services.find(
+                service => service.name === activatedService[1].name
+              );
+              service.widgets.forEach(widget => {
+                const activatedWidget = Object.entries(
+                  response.data.data.widgets
+                ).find(
+                  dbActivatedWidget => dbActivatedWidget[1].name === widget.name
+                );
+                widget.color = service.color;
+                widget.serviceName = service.name;
+                widget.serviceId = activatedService[0];
+                if (activatedWidget) {
+                  widget.id = activatedWidget[0];
+                  this.activatedWidgets.push(widget);
+                } else this.availableWidgets.push(widget);
+              });
+            }
+          })
+          .catch(error => {
+            if (error.response) {
+              this.$message({
+                showClose: true,
+                message: error.response.data.message,
+                type: "error"
+              });
+            }
+          });
+      });
     }
   }
 };

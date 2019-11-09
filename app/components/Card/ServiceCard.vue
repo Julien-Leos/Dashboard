@@ -29,8 +29,6 @@
 </template>
 
 <script>
-const axios = require("axios");
-
 export default {
   name: "ServiceCard",
   filters: {
@@ -49,7 +47,7 @@ export default {
     },
     name: {
       type: String,
-      default: "Name"
+      default: "Service"
     },
     isOauth: {
       type: Boolean,
@@ -76,18 +74,11 @@ export default {
     this.nameColor = this.$idealTextColor(this.color);
   },
   methods: {
-    adaptImageName(name) {
-      return name.replace(" ", "_").toLowerCase();
-    },
     actionBtn() {
       if (this.isConnected) {
-        axios({
+        this.$axios({
           method: "delete",
-          url:
-            "http://localhost:8080/users/" +
-            this.$store.state.auth.userId +
-            "/services/" +
-            this.id
+          url: "users/" + this.$store.state.auth.userId + "/services/" + this.id
         })
           .then(response => {
             if (response) {
@@ -97,7 +88,7 @@ export default {
                 type: "success"
               });
             }
-            this.$emit("onConnect", this.name, !this.isConnected);
+            this.$emit("onConnect");
           })
           .catch(error => {
             if (error.response) {
@@ -112,12 +103,9 @@ export default {
         const bodyFormData = new FormData();
 
         bodyFormData.set("name", this.name);
-        axios({
+        this.$axios({
           method: "post",
-          url:
-            "http://localhost:8080/users/" +
-            this.$store.state.auth.userId +
-            "/services",
+          url: "users/" + this.$store.state.auth.userId + "/services",
           data: bodyFormData,
           config: { headers: { "Content-Type": "multipart/form-data" } }
         })
@@ -148,6 +136,7 @@ export default {
 
 <style scoped>
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -156,14 +145,13 @@ export default {
   height: 25vh;
   border-radius: 0.3em;
   margin: 1.3vh;
-  text-align: center;
-  font-size: 1.2em;
-  font-weight: bold;
 }
 
 .cardName {
   display: block;
   margin: 1.5vh 0.5vh;
+  font-size: 1.4em;
+  font-weight: bold;
 }
 
 .cardImage {

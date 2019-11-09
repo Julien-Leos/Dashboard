@@ -21,8 +21,6 @@
 </template>
 
 <script>
-const axios = require("axios");
-
 export default {
   data: () => {
     return {
@@ -38,9 +36,9 @@ export default {
 
       bodyFormData.set("email", this.form.email);
       bodyFormData.set("password", this.form.password);
-      axios({
+      this.$axios({
         method: "post",
-        url: "http://localhost:8080/register",
+        url: "register",
         data: bodyFormData,
         config: { headers: { "Content-Type": "multipart/form-data" } }
       })

@@ -21,7 +21,7 @@
         <span slot="title">Services</span>
       </el-menu-item>
     </nuxt-link>
-    <nuxt-link to="/services">
+    <nuxt-link to="/widgets">
       <el-menu-item index="3">
         <font-awesome-icon icon="puzzle-piece" />
         <span slot="title">Widgets</span>

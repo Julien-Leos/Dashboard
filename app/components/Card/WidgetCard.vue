@@ -18,23 +18,27 @@
       class="cardName"
       :style="'color: #' + nameColor + ';opacity: ' + (isOvered ? 0.4 : 1)"
     >
-      {{ name | serviceName }}
+      {{ widget.name | widgetName }}
     </span>
     <img
       class="cardImage"
-      :src="'/' + name + '.png'"
-      :style="'opacity: ' + (isOvered ? 0.4 : 1)"
+      :src="'/' + widget.serviceName + '.png'"
+      :style="'opacity: ' + (isOvered ? 0.1 : 0.2)"
     />
+    <span
+      class="cardDesc"
+      :style="'color: #' + nameColor + ';opacity: ' + (isOvered ? 0.4 : 1)"
+    >
+      {{ widget.description }}
+    </span>
   </div>
 </template>
 
 <script>
-const axios = require("axios");
-
 export default {
   name: "WidgetCard",
   filters: {
-    serviceName: value => {
+    widgetName: value => {
       return value
         .replace("_", " ")
         .split(" ")
@@ -43,17 +47,9 @@ export default {
     }
   },
   props: {
-    id: {
-      type: String,
-      default: ""
-    },
-    name: {
-      type: String,
-      default: "Name"
-    },
-    color: {
-      type: String,
-      default: "FFFFFF"
+    widget: {
+      type: Object,
+      default: () => ({})
     },
     isConnected: {
       type: Boolean,
@@ -68,23 +64,21 @@ export default {
     };
   },
   mounted() {
-    this.backgroundColor = this.$brighterColor(this.color, 65);
-    this.nameColor = this.$idealTextColor(this.color);
+    this.backgroundColor = this.$brighterColor(this.widget.color, 65);
+    this.nameColor = this.$idealTextColor(this.widget.color);
   },
   methods: {
-    adaptImageName(name) {
-      return name.replace(" ", "_").toLowerCase();
-    },
     actionBtn() {
       if (this.isConnected) {
-        axios({
-          method: "delete",
-          url:
-            "http://localhost:8080/users/" +
-            this.$store.state.auth.userId +
-            "/services/" +
-            this.id
-        })
+        this.$axios
+          .delete(
+            "users/" +
+              this.$store.state.auth.userId +
+              "/services/" +
+              this.widget.serviceId +
+              "/widgets/" +
+              this.widget.id
+          )
           .then(response => {
             if (response) {
               this.$message({
@@ -93,7 +87,7 @@ export default {
                 type: "success"
               });
             }
-            this.$emit("onConnect", this.name, !this.isConnected);
+            this.$emit("onConnect");
           })
           .catch(error => {
             if (error.response) {
@@ -107,13 +101,17 @@ export default {
       } else {
         const bodyFormData = new FormData();
 
-        bodyFormData.set("name", this.name);
-        axios({
+        bodyFormData.set("name", this.widget.name);
+        bodyFormData.set("x", 0);
+        bodyFormData.set("y", 0);
+        this.$axios({
           method: "post",
           url:
-            "http://localhost:8080/users/" +
+            "users/" +
             this.$store.state.auth.userId +
-            "/services",
+            "/services/" +
+            this.widget.serviceId +
+            "/widgets",
           data: bodyFormData,
           config: { headers: { "Content-Type": "multipart/form-data" } }
         })
@@ -144,6 +142,7 @@ export default {
 
 <style scoped>
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -152,23 +151,29 @@ export default {
   height: 25vh;
   border-radius: 0.3em;
   margin: 1.3vh;
-  text-align: center;
-  font-size: 1.2em;
-  font-weight: bold;
 }
 
 .cardName {
   display: block;
   margin: 1.5vh 0.5vh;
+  font-size: 1.4em;
+  font-weight: bold;
+  z-index: 1;
+}
+
+.cardDesc {
+  display: block;
+  margin: 0.5vh 2vh;
+  font-size: 1em;
+  z-index: 1;
 }
 
 .cardImage {
-  width: 40%;
-  flex-shrink: 0;
+  position: absolute;
 }
 
 .actionBtn {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
 }
 </style>
