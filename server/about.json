@@ -7,6 +7,8 @@
         "services": [
             {
                 "name": "twitch",
+                "isOauth": true,
+                "color": "6441A4",
                 "widgets": [
                     {
                         "name": "live_viewer",
@@ -42,6 +44,8 @@
             },
             {
                 "name": "intra_epitech",
+                "isOauth": true,
+                "color": "005FA9",
                 "widgets": [
                     {
                         "name": "module_info",
@@ -97,6 +101,8 @@
             },
             {
                 "name": "rss",
+                "isOauth": false,
+                "color": "EE802F",
                 "widgets": [
                     {
                         "name": "article_list",

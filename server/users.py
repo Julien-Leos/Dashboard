@@ -52,9 +52,9 @@ def users(id):
                 return paramMandatoryError
 
     if request.method == "GET" and not id:
-        return List(users)
+        return List(users, actualUser)
     elif request.method == "GET" and id:
-        return Get(users, id)
+        return Get(users, id, actualUser)
     elif request.method == "POST" and not id:
         return Post(users, form, params, actualUser)
     elif request.method == "PUT" and id:
@@ -63,11 +63,17 @@ def users(id):
         return Delete(users, form, id, actualUser)
 
 
-def List(users):
+def List(users, actualUser):
+    if not actualUser["value"]["isAdmin"]:
+        return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot get list of all users"}), status.HTTP_400_BAD_REQUEST
+    
     return jsonify({"message": "users successfully getted", "data": {"users": users}}), status.HTTP_200_OK
 
 
-def Get(users, id):
+def Get(users, id, actualUser):
+    if actualUser["key"] != id and not actualUser["value"]["isAdmin"]:
+        return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot get an other user"}), status.HTTP_400_BAD_REQUEST
+    
     if id in users:
         return jsonify({"message": "user '" + id + "' successfully getted", "data": {"users": users[id]}}), status.HTTP_200_OK
     return jsonify({"message": "Error: user '" + id + "' do not exist."}), status.HTTP_400_BAD_REQUEST
@@ -78,7 +84,7 @@ def Post(users, form, params, actualUser):
         if user["email"].lower() == form["email"].lower():
             return jsonify({"message": "Error: user '" + form["email"] + "' already exist"}), status.HTTP_400_BAD_REQUEST
 
-    if "isAdmin" in form and not actualUser["value"]["isAdmin"]:
+    if "isAdmin" in form and form["isAdmin"] == "true" and not actualUser["value"]["isAdmin"]:
         return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot create a user with administrator permissions"}), status.HTTP_400_BAD_REQUEST
 
     for paramName, param in params.items():
