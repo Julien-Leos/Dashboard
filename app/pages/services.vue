@@ -7,12 +7,12 @@
           >There are no service connected</span
         >
         <Card
+          v-for="(service, name) in activatedServices"
           v-else
-          v-for="availableService in activatedServices"
-          :key="availableService[0]"
-          :name="availableService[1]['name']"
-          :isOauth="Boolean(availableService[1]['isOauth'])"
-          :color="availableService[1]['color']"
+          :key="name"
+          :name="service['name']"
+          :isOauth="Boolean(service['isOauth'])"
+          :color="service['color']"
         />
       </el-main>
     </el-container>
@@ -23,12 +23,12 @@
           >There are no more service availables</span
         >
         <Card
+          v-for="(service, name) in availableServices"
           v-else
-          v-for="availableService in availableServices"
-          :key="availableService[0]"
-          :name="availableService[1]['name']"
-          :isOauth="Boolean(availableService[1]['isOauth'])"
-          :color="availableService[1]['color']"
+          :key="name"
+          :name="service['name']"
+          :isOauth="Boolean(service['isOauth'])"
+          :color="service['color']"
         />
       </el-main>
     </el-container>

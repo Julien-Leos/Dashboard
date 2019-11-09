@@ -50,6 +50,10 @@ export default {
             message: response.data.message,
             type: "success"
           });
+          this.$store.commit("auth/login", {
+            token: response.data.data.accessToken,
+            username: this.form.email
+          });
           this.$router.push("/home");
         })
         .catch(error => {

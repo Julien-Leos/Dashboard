@@ -29,8 +29,6 @@
 <script>
 import Widget from "../components/Widget/Widget";
 
-const axios = require("axios");
-
 export default {
   middleware: "auth",
   components: {
@@ -47,12 +45,6 @@ export default {
         { x: 10, y: 0, w: 2, h: 3, i: "5", type: "number" }
       ]
     };
-  },
-  mounted() {
-    axios({
-      method: "get",
-      url: "http://localhost:8080/home"
-    });
   }
 };
 </script>

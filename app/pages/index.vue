@@ -1,6 +1,6 @@
 <template>
   <div class="indexPage">
-    <h1>Dashboard</h1>
+    <h1>Dashboard coudededdeccou papa</h1>
   </div>
 </template>
 

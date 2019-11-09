@@ -5,8 +5,10 @@ from flask_api import status
 
 from about import about_page
 from login import login_page
-from home import home_page
+from users import users_page
 from services import services_page
+from widgets import widgets_page
+from userServices import userServices_page
 
 
 app = Flask(__name__)
@@ -14,24 +16,22 @@ CORS(app)
 
 app.register_blueprint(about_page)
 app.register_blueprint(login_page)
-app.register_blueprint(home_page)
+
+app.register_blueprint(users_page)
 app.register_blueprint(services_page)
+app.register_blueprint(widgets_page)
+app.register_blueprint(userServices_page)
 
 
-def getChildItems(child):
-    return list(child.get().val().items())
+def getDict(child):
+    return dict(child.get().val())
 
 
-def checkAccessToken(header, users):
-    accessToken = header.get("Authorization")
-    userAccessToken = ""
-
-    for user in users:
-        if user[1]["accessToken"] == accessToken:
-            userAccessToken = user[1]["accessToken"]
-    if accessToken == userAccessToken:
-        return True
-    return False
+def getActualUser(accessToken, users):
+    for userId, user in users.items():
+        if user["accessToken"] == accessToken:
+            return {"key": userId, "value": user}
+    return None
 
 
 def checkIfInt(param):
@@ -50,43 +50,58 @@ def checkIfFloat(param):
         return False
 
 
+def checkIfDict(param):
+    try:
+        dict(param)
+        return True
+    except ValueError:
+        return False
+
+
 def checkIfBool(param):
     if param.lower() == "true" or param.lower() == "false":
         return True
     return False
 
 
-def checkAPIParams(form, params):
+def checkParamsMandatory(form, params):
+    paramExist = False
+
+    for paramName, param in params.items():
+        paramExist = False
+        if param["mandatory"]:
+            for itemName in form:
+                if paramName == itemName:
+                    paramExist = True
+            if not paramExist:
+                return jsonify({"message": "Error: Param '" + paramName + "' is mandatory and has not been found."}), status.HTTP_400_BAD_REQUEST
+    return None
+
+
+def checkParamsType(form, params):
     paramExist = False
     paramError = False
 
-    for param in params.items():
+    for itemName, item in form.items():
         paramExist = False
-        if param[1]["mandatory"]:
-            for item in form.items():
-                if param[0] == item[0]:
-                    paramExist = True
-            if not paramExist:
-                return jsonify({"message": "Error: Param '" + param[0] + "' is mandatory and has not been found."}), status.HTTP_400_BAD_REQUEST
-
-    paramExist = False
-    for item in form.items():
-        paramExist = False
-        for param in params.items():
-            if param[0] == item[0]:
+        for paramName, param in params.items():
+            if paramName == itemName:
                 paramExist = True
-                if param[1]["type"] == int and not checkIfInt(item[1]):
+                if param["type"] == int and not checkIfInt(item):
                     paramError = True
-                elif param[1]["type"] == float and not checkIfFloat(item[1]):
+                elif param["type"] == float and not checkIfFloat(item):
                     paramError = True
-                elif param[1]["type"] == bool and not checkIfBool(item[1]):
+                elif param["type"] == dict and not checkIfDict(item):
+                    paramError = True
+                elif param["type"] == bool and not checkIfBool(item):
                     paramError = True
             if paramError:
-                return jsonify({"message": "Error: Param '" + param[0] + "' should have been of type " +
-                                str(param[1]["type"]) + " but has received '" + item[1] + "'."}), status.HTTP_400_BAD_REQUEST
+                return jsonify({"message": "Error: Param '" + paramName + "' should have been of type " +
+                                str(param["type"]) + " but has received '" + item + "'."}), status.HTTP_400_BAD_REQUEST
         if not paramExist:
-            return jsonify({"message": "Error: Param '" + item[0] + "' is not recognized and should not be sent."}), status.HTTP_400_BAD_REQUEST
+            return jsonify({"message": "Error: Param '" + itemName + "' is not recognized and should not be sent."}), status.HTTP_400_BAD_REQUEST
     return None
+
 
 @app.route('/')
 def index():
