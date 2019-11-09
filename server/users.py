@@ -60,7 +60,7 @@ def users(userId):
     elif request.method == "PUT" and userId:
         return Put(users, form, userId, actualUser)
     elif request.method == "DELETE" and userId:
-        return Delete(users, form, userId, actualUser)
+        return Delete(users, userId, actualUser)
 
 
 def List(users, actualUser):
@@ -75,7 +75,8 @@ def Get(users, userId, actualUser):
         return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot get an other user"}), status.HTTP_400_BAD_REQUEST
 
     if userId in users:
-        return jsonify({"message": "user '" + userId + "' successfully getted", "data": {"users": users[userId]}}), status.HTTP_200_OK
+        user = users[userId]
+        return jsonify({"message": "user '" + user["email"] + "' successfully getted", "data": {"users": users[userId]}}), status.HTTP_200_OK
     return jsonify({"message": "Error: user '" + userId + "' do not exist."}), status.HTTP_400_BAD_REQUEST
 
 
@@ -106,21 +107,23 @@ def Put(users, form, userId, actualUser):
                 return jsonify({"message": "Error: user '" + form["email"] + "' already exist"}), status.HTTP_400_BAD_REQUEST
 
     if userId in users:
+        user = users[userId]
         if "isAdmin" in form and not actualUser["value"]["isAdmin"]:
             return jsonify({"message": "Error: user '" + userId + "' cannot set himself as administrator"}), status.HTTP_400_BAD_REQUEST
         database.child('users').child(userId).update(form)
-        return jsonify({"message": "user '" + userId + "' successfully updated.", "data": {"user": form}}), status.HTTP_200_OK
+        return jsonify({"message": "user '" + user["email"] + "' successfully updated.", "data": {"user": form}}), status.HTTP_200_OK
     return jsonify({"message": "Error: user '" + userId + "' do not exist."}), status.HTTP_400_BAD_REQUEST
 
 
-def Delete(users, form, userId, actualUser):
+def Delete(users, userId, actualUser):
     if actualUser["key"] != userId and not actualUser["value"]["isAdmin"]:
         return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot delete an other user"}), status.HTTP_400_BAD_REQUEST
 
     if userId in users:
+        user = users[userId]
         database.child('users').child(userId).remove()
         users.pop(userId)
         if len(users) == 0:
             database.update({"users": ""})
-        return jsonify({"message": "user '" + userId + "' successfully removed.", "data": {"user": users}}), status.HTTP_200_OK
+        return jsonify({"message": "user '" + user["emial"] + "' successfully removed.", "data": {"user": users}}), status.HTTP_200_OK
     return jsonify({"message": "Error: user '" + userId + "' do not exist."}), status.HTTP_400_BAD_REQUEST

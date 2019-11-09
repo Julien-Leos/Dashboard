@@ -2,33 +2,38 @@
   <div>
     <el-container class="bg-gray-light">
       <el-header height="5vh">Activated Services</el-header>
-      <el-main class="bg-gray">
+      <el-main class="serviceCard bg-gray">
         <span v-if="activatedServices.length === 0"
           >There are no service connected</span
         >
-        <Card
-          v-for="(service, name) in activatedServices"
+        <ServiceCard
+          v-for="service in activatedServices"
           v-else
-          :key="name"
+          :id="service.id"
+          :key="service.id"
           :name="service['name']"
-          :isOauth="Boolean(service['isOauth'])"
+          :is-oauth="Boolean(service['isOauth'])"
           :color="service['color']"
+          :is-connected="true"
+          @onConnect="getActivatedServices"
         />
       </el-main>
     </el-container>
     <el-container class="bg-gray-light">
       <el-header height="5vh">Available Services</el-header>
-      <el-main class="cards bg-gray">
+      <el-main class="serviceCard bg-gray">
         <span v-if="availableServices.length === 0"
-          >There are no more service availables</span
+          >There are no more service to connect</span
         >
-        <Card
-          v-for="(service, name) in availableServices"
+        <ServiceCard
+          v-for="service in availableServices"
           v-else
-          :key="name"
+          :key="service.id"
           :name="service['name']"
-          :isOauth="Boolean(service['isOauth'])"
+          :is-oauth="Boolean(service['isOauth'])"
           :color="service['color']"
+          :is-connected="false"
+          @onConnect="getActivatedServices"
         />
       </el-main>
     </el-container>
@@ -36,33 +41,32 @@
 </template>
 
 <script>
-import Card from "../components/Card/Card";
+import ServiceCard from "../components/Card/ServiceCard";
 
 const axios = require("axios");
 
 export default {
   middleware: "auth",
   components: {
-    Card
+    ServiceCard
   },
   data: () => {
     return {
+      services: {},
       availableServices: [],
       activatedServices: []
     };
   },
   mounted() {
-    axios({
-      method: "get",
-      url: "http://localhost:8080/services"
-    })
+    axios
+      .get("http://localhost:8080/services")
       .then(response => {
         if (response) {
-          this.availableServices = response.data.data.services;
+          this.services = response.data.data.services;
         }
       })
       .catch(error => {
-        if (error) {
+        if (error.response) {
           this.$message({
             showClose: true,
             message: error.response.data.message,
@@ -70,6 +74,45 @@ export default {
           });
         }
       });
+    this.getActivatedServices();
+  },
+  methods: {
+    getActivatedServices() {
+      axios
+        .get(
+          "http://localhost:8080/users/" +
+            this.$store.state.auth.userId +
+            "/services"
+        )
+        .then(response => {
+          if (response) {
+            this.activatedServices = [];
+            this.availableServices = [];
+            this.services.forEach(service => {
+              const dbActivatedServices = Object.entries(
+                response.data.data.services
+              );
+              const activatedService = dbActivatedServices.find(
+                dbActivatedService =>
+                  dbActivatedService[1].name === service.name
+              );
+              if (activatedService) {
+                service.id = activatedService[0];
+                this.activatedServices.push(service);
+              } else this.availableServices.push(service);
+            });
+          }
+        })
+        .catch(error => {
+          if (error.response) {
+            this.$message({
+              showClose: true,
+              message: error.response.data.message,
+              type: "error"
+            });
+          }
+        });
+    }
   }
 };
 </script>
@@ -90,7 +133,7 @@ export default {
   border-radius: 0.5em;
 }
 
-.cards {
+.serviceCard {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;

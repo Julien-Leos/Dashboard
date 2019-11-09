@@ -87,7 +87,7 @@ def userWidgets(userId, serviceId, widgetId):
     elif request.method == "PUT" and widgetId:
         return Put(userWidgets, form, jsonData, userId, serviceId, widgetId, actualUser)
     elif request.method == "DELETE" and widgetId:
-        return Delete(userWidgets, form, userId, serviceId, widgetId, actualUser)
+        return Delete(userWidgets, userId, serviceId, widgetId, actualUser)
 
 
 def List(userWidgets, userId, actualUser):
@@ -102,7 +102,8 @@ def Get(userWidgets, userId, widgetId, actualUser):
         return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot get other user's widgets"}), status.HTTP_400_BAD_REQUEST
 
     if widgetId in userWidgets:
-        return jsonify({"message": "User's widget '" + widgetId + "' successfully getted", "data": {"widgets": userWidgets[widgetId]}}), status.HTTP_200_OK
+        userWidget = userWidgets[widgetId]
+        return jsonify({"message": "User's widget '" + userWidget["name"] + "' successfully getted", "data": {"widgets": userWidgets[widgetId]}}), status.HTTP_200_OK
     return jsonify({"message": "Error: User's widget '" + widgetId + "' do not exist."}), status.HTTP_400_BAD_REQUEST
 
 
@@ -147,22 +148,24 @@ def Put(userWidgets, form, jsonData, userId, serviceId, widgetId, actualUser):
                 return jsonify({"message": "Error: User's widget '" + form["name"] + "' already exist"}), status.HTTP_400_BAD_REQUEST
 
     if widgetId in userWidgets:
+        userWidget = userWidgets[widgetId]
         database.child('users').child(userId).child(
             'services').child(serviceId).child('widgets').child(widgetId).update(form)
-        return jsonify({"message": "User's widget '" + widgetId + "' successfully updated.", "data": {"widgets": form}}), status.HTTP_200_OK
+        return jsonify({"message": "User's widget '" + userWidget["name"] + "' successfully updated.", "data": {"widgets": form}}), status.HTTP_200_OK
     return jsonify({"message": "Error: User's widget '" + widgetId + "' do not exist."}), status.HTTP_400_BAD_REQUEST
 
 
-def Delete(userWidgets, form, userId, serviceId, widgetId, actualUser):
+def Delete(userWidgets, userId, serviceId, widgetId, actualUser):
     if not actualUser["value"]["isAdmin"]:
         return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot delete a user's widget"}), status.HTTP_400_BAD_REQUEST
 
     if widgetId in userWidgets:
+        userWidget = userWidgets[widgetId]
         database.child('users').child(userId).child(
             'services').child(serviceId).child('widgets').child(widgetId).remove()
         userWidgets.pop(widgetId)
         if len(userWidgets) == 0:
             database.child('users').child(userId).child(
                 'services').child(serviceId).update({"widgets": ""})
-        return jsonify({"message": "User's widget '" + widgetId + "' successfully removed.", "data": {"widgets": userWidgets}}), status.HTTP_200_OK
+        return jsonify({"message": "User's widget '" + userWidget["name"] + "' successfully removed.", "data": {"widgets": userWidgets}}), status.HTTP_200_OK
     return jsonify({"message": "Error: User's widget '" + widgetId + "' do not exist."}), status.HTTP_400_BAD_REQUEST

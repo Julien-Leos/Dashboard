@@ -45,9 +45,9 @@ export default {
               message: response.data.message,
               type: "success"
             });
-            this.$store.commit("auth/login", {
+            this.$store.dispatch("auth/login", {
               token: response.data.data.accessToken,
-              username: this.form.email
+              userMail: this.form.email
             });
             this.$router.push("/home");
           }

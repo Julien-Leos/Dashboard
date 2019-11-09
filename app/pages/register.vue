@@ -52,7 +52,7 @@ export default {
           });
           this.$store.commit("auth/login", {
             token: response.data.data.accessToken,
-            username: this.form.email
+            userMail: this.form.email
           });
           this.$router.push("/home");
         })
