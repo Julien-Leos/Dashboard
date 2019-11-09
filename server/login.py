@@ -42,5 +42,5 @@ def register():
 
         accessToken = secrets.token_hex(16)
         database.child('users').push(
-            {"email": body["email"], "password": body["password"], "accessToken": accessToken})
+            {"email": body["email"], "password": body["password"], "accessToken": accessToken, "isAdmin": False, "services": ""})
         return jsonify({"message": "User successfully created", "data": {"accessToken": accessToken}}), status.HTTP_200_OK

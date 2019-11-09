@@ -1,3 +1,5 @@
+import json
+
 from flask import Blueprint
 from flask import request
 from flask import jsonify
@@ -6,26 +8,27 @@ from flask_api import status
 from firebase import database
 import app
 
+
 userServices_page = Blueprint('userServices_page', __name__)
 
 
-@userServices_page.route('/user/<userId>/services', defaults={'id': None}, methods=["GET", "POST"])
-@userServices_page.route('/user/<userId>/services/<id>', methods=["GET", "PUT", "DELETE"])
-def services(userId, id):
+@userServices_page.route('/users/<userId>/services', defaults={'serviceId': None}, methods=["GET", "POST"])
+@userServices_page.route('/users/<userId>/services/<serviceId>', methods=["GET", "PUT", "DELETE"])
+def userServices(userId, serviceId):
     form = request.form.to_dict(flat=True)
     users = app.getDict(database.child('users'))
     actualUser = app.getActualUser(request.headers.get("Authorization"), users)
 
     params = {
-        "id": {
+        "name": {
             "type": str,
             "mandatory": True,
             "default": None
         },
-        "widgets": {
-            "type": dict,
-            "mandatory": True,
-            "default": None
+        "accessToken": {
+            "type": str,
+            "mandatory": False,
+            "default": ""
         }
     }
 
@@ -41,33 +44,53 @@ def services(userId, id):
             if paramMandatoryError != None:
                 return paramMandatoryError
 
-    userServices = app.getDict(database.child('users').child(userId).child('services'))
+    user = database.child('users').child(userId)
+    if user.get().val() == None:
+        return jsonify({"message": "Error: user '" + userId + "' do not exist."}), status.HTTP_400_BAD_REQUEST
+    userServices = app.getDict(database.child(
+        'users').child(userId).child('services'))
 
-    if request.method == "GET" and not id:
-        return List(userServices)
-    elif request.method == "GET" and id:
-        return Get(userServices, id)
-    elif request.method == "POST" and not id:
-        return Post(userServices, form, params, actualUser)
-    elif request.method == "PUT" and id:
-        return Put(userServices, form, id, actualUser)
-    elif request.method == "DELETE" and id:
-        return Delete(userServices, form, id, actualUser)
+    with open('about.json', 'r') as json_file:
+        jsonData = json.load(json_file)["server"]["services"]
 
-
-def List(userServices):
-    return jsonify({"message": "User's services successfully getted", "data": {"userServices": userServices}}), status.HTTP_200_OK
-
-
-def Get(userServices, id):
-    if id in userServices:
-        return jsonify({"message": "User's service '" + id + "' successfully getted", "data": {"userServices": userServices[id]}}), status.HTTP_200_OK
-    return jsonify({"message": "Error: User's service '" + id + "' do not exist."}), status.HTTP_400_BAD_REQUEST
+    if request.method == "GET" and not serviceId:
+        return List(userServices, userId, actualUser)
+    elif request.method == "GET" and serviceId:
+        return Get(userServices, userId, serviceId, actualUser)
+    elif request.method == "POST" and not serviceId:
+        return Post(userServices, form, params, jsonData, userId, actualUser)
+    elif request.method == "PUT" and serviceId:
+        return Put(userServices, form, jsonData, userId, serviceId, actualUser)
+    elif request.method == "DELETE" and serviceId:
+        return Delete(userServices, form, userId, serviceId, actualUser)
 
 
-def Post(userServices, form, params, actualUser):
+def List(userServices, userId, actualUser):
+    if actualUser["key"] != userId and not actualUser["value"]["isAdmin"]:
+        return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot get list of other user's services"}), status.HTTP_400_BAD_REQUEST
+
+    return jsonify({"message": "User's services successfully getted", "data": {"services": userServices}}), status.HTTP_200_OK
+
+
+def Get(userServices, userId, serviceId, actualUser):
+    if actualUser["key"] != userId and not actualUser["value"]["isAdmin"]:
+        return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot get other user's service"}), status.HTTP_400_BAD_REQUEST
+
+    if serviceId in userServices:
+        return jsonify({"message": "User's service '" + serviceId + "' successfully getted", "data": {"services": userServices[serviceId]}}), status.HTTP_200_OK
+    return jsonify({"message": "Error: User's service '" + serviceId + "' do not exist."}), status.HTTP_400_BAD_REQUEST
+
+
+def Post(userServices, form, params, jsonData, userId, actualUser):
     if not actualUser["value"]["isAdmin"]:
         return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot create a user's service"}), status.HTTP_400_BAD_REQUEST
+
+    serviceExist = False
+    for serviceJsonData in jsonData:
+        if serviceJsonData["name"].lower() == form["name"].lower():
+            serviceExist = True
+    if not serviceExist:
+        return jsonify({"message": "Error: Service '" + form["name"].lower() + "' do not exist."}), status.HTTP_400_BAD_REQUEST
 
     for userService in userServices.values():
         if userService["name"].lower() == form["name"].lower():
@@ -76,27 +99,44 @@ def Post(userServices, form, params, actualUser):
     for paramName, param in params.items():
         if not paramName in form:
             form[paramName] = param["default"]
+    form["widgets"] = ""
 
-    database.child('services').push(form)
-    return jsonify({"message": "User's service '" + form["name"] + "' successfully created", "data": {"userService": form}}), status.HTTP_200_OK
+    database.child('users').child(userId).child('services').push(form)
+    return jsonify({"message": "User's service '" + form["name"] + "' successfully created", "data": {"services": form}}), status.HTTP_200_OK
 
 
-def Put(userServices, form, id, actualUser):
+def Put(userServices, form, jsonData, userId, serviceId, actualUser):
     if not actualUser["value"]["isAdmin"]:
         return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot update a user's service"}), status.HTTP_400_BAD_REQUEST
 
-    if id in userServices:
-        database.child('services').child(id).update(form)
-        return jsonify({"message": "User's service '" + id + "' successfully updated.", "data": {"userService": form}}), status.HTTP_200_OK
-    return jsonify({"message": "Error: User's service '" + id + "' do not exist."}), status.HTTP_400_BAD_REQUEST
+    if "name" in form:
+        serviceExist = False
+        for serviceJsonData in jsonData:
+            if serviceJsonData["name"].lower() == form["name"].lower():
+                serviceExist = True
+        if not serviceExist:
+            return jsonify({"message": "Error: Service '" + form["name"].lower() + "' do not exist."}), status.HTTP_400_BAD_REQUEST
+
+        for userService in userServices.values():
+            if userService["name"].lower() == form["name"].lower():
+                return jsonify({"message": "Error: User's service '" + form["name"].lower() + "' already exist"}), status.HTTP_400_BAD_REQUEST
+
+    if serviceId in userServices:
+        database.child('users').child(userId).child(
+            'services').child(serviceId).update(form)
+        return jsonify({"message": "User's service '" + serviceId + "' successfully updated.", "data": {"services": form}}), status.HTTP_200_OK
+    return jsonify({"message": "Error: User's service '" + serviceId + "' do not exist."}), status.HTTP_400_BAD_REQUEST
 
 
-def Delete(userServices, form, id, actualUser):
+def Delete(userServices, form, userId, serviceId, actualUser):
     if not actualUser["value"]["isAdmin"]:
         return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot delete a user's service"}), status.HTTP_400_BAD_REQUEST
 
-    if id in userServices:
-        database.child('services').child(id).remove()
-        userServices.pop(id)
-        return jsonify({"message": "User's service '" + id + "' successfully removed.", "data": {"userService": userServices}}), status.HTTP_200_OK
-    return jsonify({"message": "Error: User's service '" + id + "' do not exist."}), status.HTTP_400_BAD_REQUEST
+    if serviceId in userServices:
+        database.child('users').child(userId).child(
+            'services').child(serviceId).remove()
+        userServices.pop(serviceId)
+        if len(userServices) == 0:
+            database.child('users').child(userId).update({"services": ""})
+        return jsonify({"message": "User's service '" + serviceId + "' successfully removed.", "data": {"services": userServices}}), status.HTTP_200_OK
+    return jsonify({"message": "Error: User's service '" + serviceId + "' do not exist."}), status.HTTP_400_BAD_REQUEST

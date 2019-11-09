@@ -15,20 +15,20 @@ services_page = Blueprint('services_page', __name__)
 @services_page.route('/services/<serviceName>', methods=["GET"])
 def services(serviceName):
     with open('about.json', 'r') as json_file:
-        data = json.load(json_file)["server"]["services"]
+        jsonData = json.load(json_file)["server"]["services"]
 
     if request.method == "GET" and not serviceName:
-        return List(data)
+        return List(jsonData)
     elif request.method == "GET" and serviceName:
-        return Get(data, serviceName.lower())
+        return Get(jsonData, serviceName.lower())
 
 
-def List(data):
-    return jsonify({"message": "Services successfully getted", "data": {"services": data}}), status.HTTP_200_OK
+def List(jsonData):
+    return jsonify({"message": "Services successfully getted", "data": {"services": jsonData}}), status.HTTP_200_OK
 
 
-def Get(data, serviceName):
-    for service in data:
+def Get(jsonData, serviceName):
+    for service in jsonData:
         if service["name"] == serviceName:
             return jsonify({"message": "Service '" + serviceName + "' successfully getted", "data": {"services": service}}), status.HTTP_200_OK
     return jsonify({"message": "Error: Service '" + serviceName + "' do not exist."}), status.HTTP_400_BAD_REQUEST

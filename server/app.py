@@ -9,7 +9,7 @@ from users import users_page
 from services import services_page
 from widgets import widgets_page
 from userServices import userServices_page
-
+from userWidgets import userWidgets_page
 
 app = Flask(__name__)
 CORS(app)
@@ -21,6 +21,7 @@ app.register_blueprint(users_page)
 app.register_blueprint(services_page)
 app.register_blueprint(widgets_page)
 app.register_blueprint(userServices_page)
+app.register_blueprint(userWidgets_page)
 
 
 def getDict(child):
