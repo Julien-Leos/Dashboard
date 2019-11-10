@@ -21,7 +21,7 @@
       class="header-auth"
     >
       <nuxt-link to="/home">
-        {{ $store.state.auth.mail.toUpperCase() }}
+        {{ $store.state.auth.userMail.toUpperCase() }}
       </nuxt-link>
       <el-button type="danger" @click="logout"
         ><nuxt-link to="/">Sign-Out</nuxt-link></el-button

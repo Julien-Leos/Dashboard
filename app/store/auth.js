@@ -22,9 +22,9 @@ export const mutations = {
 };
 
 export const actions = {
-  login({ dispatch, commit }, data) {
+  async login({ dispatch, commit }, data) {
     commit("login", data);
-    dispatch("getUserIdByMail", data.userMail);
+    await dispatch("getUserIdByMail", data.userMail);
   },
   async getUserIdByMail({ commit }, userMail) {
     const { data } = await this.$axios.get("users");

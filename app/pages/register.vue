@@ -42,24 +42,30 @@ export default {
         data: bodyFormData,
         config: { headers: { "Content-Type": "multipart/form-data" } }
       })
-        .then(response => {
-          this.$message({
-            showClose: true,
-            message: response.data.message,
-            type: "success"
-          });
-          this.$store.commit("auth/login", {
-            token: response.data.data.accessToken,
-            userMail: this.form.email
-          });
-          this.$router.push("/home");
+        .then(async response => {
+          if (response) {
+            this.$message({
+              showClose: true,
+              message: response.data.message,
+              type: "success"
+            });
+            await this.$store.dispatch("auth/login", {
+              token: response.data.data.accessToken,
+              userMail: this.form.email
+            });
+            console.log(this.$store.state.auth.userId);
+            this.$router.push("/home");
+            console.log(this.$store.state.auth.userId);
+          }
         })
         .catch(error => {
-          this.$message({
-            showClose: true,
-            message: error.response.data.message,
-            type: "error"
-          });
+          if (error.response) {
+            this.$message({
+              showClose: true,
+              message: error.response.data.message,
+              type: "error"
+            });
+          }
         });
     }
   }

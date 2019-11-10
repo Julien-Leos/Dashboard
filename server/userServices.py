@@ -83,7 +83,7 @@ def Get(userServices, userId, serviceId, actualUser):
 
 
 def Post(userServices, form, params, jsonData, userId, actualUser):
-    if not actualUser["value"]["isAdmin"]:
+    if actualUser["key"] != userId and not actualUser["value"]["isAdmin"]:
         return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot create a user's service"}), status.HTTP_400_BAD_REQUEST
 
     serviceExist = False
@@ -103,11 +103,11 @@ def Post(userServices, form, params, jsonData, userId, actualUser):
     form["widgets"] = ""
 
     database.child('users').child(userId).child('services').push(form)
-    return jsonify({"message": "User's service '" + form["name"] + "' successfully created", "data": {"services": form}}), status.HTTP_200_OK
+    return jsonify({"message": "User's service '" + form["name"] + "' successfully connected.", "data": {"services": form}}), status.HTTP_200_OK
 
 
 def Put(userServices, form, jsonData, userId, serviceId, actualUser):
-    if not actualUser["value"]["isAdmin"]:
+    if actualUser["key"] != userId and not actualUser["value"]["isAdmin"]:
         return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot update a user's service"}), status.HTTP_400_BAD_REQUEST
 
     if "name" in form:
@@ -131,7 +131,7 @@ def Put(userServices, form, jsonData, userId, serviceId, actualUser):
 
 
 def Delete(userServices, userId, serviceId, actualUser):
-    if not actualUser["value"]["isAdmin"]:
+    if actualUser["key"] != userId and not actualUser["value"]["isAdmin"]:
         return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot delete a user's service"}), status.HTTP_400_BAD_REQUEST
 
     if serviceId in userServices:
@@ -141,5 +141,5 @@ def Delete(userServices, userId, serviceId, actualUser):
         userServices.pop(serviceId)
         if len(userServices) == 0:
             database.child('users').child(userId).update({"services": ""})
-        return jsonify({"message": "User's service '" + userService["name"] + "' successfully removed.", "data": {"services": userServices}}), status.HTTP_200_OK
+        return jsonify({"message": "User's service '" + userService["name"] + "' successfully disconnected.", "data": {"services": userServices}}), status.HTTP_200_OK
     return jsonify({"message": "Error: User's service '" + serviceId + "' do not exist."}), status.HTTP_400_BAD_REQUEST

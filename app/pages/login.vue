@@ -36,14 +36,14 @@ export default {
         data: bodyFormData,
         config: { headers: { "Content-Type": "multipart/form-data" } }
       })
-        .then(response => {
+        .then(async response => {
           if (response) {
             this.$message({
               showClose: true,
               message: response.data.message,
               type: "success"
             });
-            this.$store.dispatch("auth/login", {
+            await this.$store.dispatch("auth/login", {
               token: response.data.data.accessToken,
               userMail: this.form.email
             });

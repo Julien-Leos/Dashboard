@@ -64,8 +64,11 @@ def users(userId):
 
 
 def List(users, actualUser):
-    if not actualUser["value"]["isAdmin"]:
-        return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot get list of all users"}), status.HTTP_400_BAD_REQUEST
+    # TO-DO: Commented because a non-admin user have to get all the users to found his
+    # own key. I have to find a way to return the user's key when creating it.
+    #
+    # if not actualUser["value"]["isAdmin"]:
+    #     return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot get list of all users"}), status.HTTP_400_BAD_REQUEST
 
     return jsonify({"message": "users successfully getted", "data": {"users": users}}), status.HTTP_200_OK
 

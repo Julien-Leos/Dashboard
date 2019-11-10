@@ -108,7 +108,7 @@ def Get(userWidgets, userId, widgetId, actualUser):
 
 
 def Post(userWidgets, form, params, jsonData, userId, serviceId, actualUser):
-    if not actualUser["value"]["isAdmin"]:
+    if actualUser["key"] != userId and not actualUser["value"]["isAdmin"]:
         return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot create a user's widget"}), status.HTTP_400_BAD_REQUEST
 
     widgetExist = False
@@ -128,11 +128,11 @@ def Post(userWidgets, form, params, jsonData, userId, serviceId, actualUser):
 
     database.child('users').child(userId).child(
         'services').child(serviceId).child('widgets').push(form)
-    return jsonify({"message": "User's widget '" + form["name"] + "' successfully created", "data": {"widgets": form}}), status.HTTP_200_OK
+    return jsonify({"message": "User's widget '" + form["name"] + "' successfully added.", "data": {"widgets": form}}), status.HTTP_200_OK
 
 
 def Put(userWidgets, form, jsonData, userId, serviceId, widgetId, actualUser):
-    if not actualUser["value"]["isAdmin"]:
+    if actualUser["key"] != userId and not actualUser["value"]["isAdmin"]:
         return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot update a user's widget"}), status.HTTP_400_BAD_REQUEST
 
     if "name" in form:
@@ -151,12 +151,12 @@ def Put(userWidgets, form, jsonData, userId, serviceId, widgetId, actualUser):
         userWidget = userWidgets[widgetId]
         database.child('users').child(userId).child(
             'services').child(serviceId).child('widgets').child(widgetId).update(form)
-        return jsonify({"message": "User's widget '" + userWidget["name"] + "' successfully updated.", "data": {"widgets": form}}), status.HTTP_200_OK
+        return jsonify({"message": "User's widget '" + userWidget["name"] + "' successfully configured.", "data": {"widgets": form}}), status.HTTP_200_OK
     return jsonify({"message": "Error: User's widget '" + widgetId + "' do not exist."}), status.HTTP_400_BAD_REQUEST
 
 
 def Delete(userWidgets, userId, serviceId, widgetId, actualUser):
-    if not actualUser["value"]["isAdmin"]:
+    if actualUser["key"] != userId and not actualUser["value"]["isAdmin"]:
         return jsonify({"message": "Error: user '" + actualUser["value"]["email"] + "' cannot delete a user's widget"}), status.HTTP_400_BAD_REQUEST
 
     if widgetId in userWidgets:

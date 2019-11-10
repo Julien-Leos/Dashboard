@@ -51,8 +51,7 @@ export default {
 
 <style>
 html {
-  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: "Helvetica Neue";
   font-size: 16px;
   word-spacing: 1px;
   -ms-text-size-adjust: 100%;
@@ -105,7 +104,15 @@ a:visited {
   color: inherit;
 }
 
+a:link {
+  color: inherit;
+}
+
 .el-header {
   padding: 0;
+}
+
+.el-link.el-link--default.is-disabled {
+  color: inherit;
 }
 </style>
