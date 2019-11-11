@@ -12,6 +12,7 @@ from userServices import userServices_page
 from userWidgets import userWidgets_page
 
 from rss import rss_page
+from twitch import twitch_page
 
 app = Flask(__name__)
 CORS(app)
@@ -26,6 +27,8 @@ app.register_blueprint(userServices_page)
 app.register_blueprint(userWidgets_page)
 
 app.register_blueprint(rss_page)
+app.register_blueprint(twitch_page)
+
 
 def getDict(child):
     return dict(child.get().val())
@@ -54,12 +57,8 @@ def checkIfFloat(param):
         return False
 
 
-def checkIfDict(param):
-    try:
-        dict(param)
-        return True
-    except ValueError:
-        return False
+def checkIfObject(param):
+    return isinstance(param, object)
 
 
 def checkIfBool(param):
@@ -95,7 +94,7 @@ def checkParamsType(form, params):
                     paramError = True
                 elif param["type"] == float and not checkIfFloat(item):
                     paramError = True
-                elif param["type"] == dict and not checkIfDict(item):
+                elif param["type"] == object and not checkIfObject(item):
                     paramError = True
                 elif param["type"] == bool and not checkIfBool(item):
                     paramError = True

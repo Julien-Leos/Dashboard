@@ -66,15 +66,6 @@ export default {
       textColor: ""
     };
   },
-  beforeMount() {
-    for (const item of Object.values(this.value.items)) {
-      item.span = item.span || 1;
-      this.totalSpan += item.span;
-    }
-    this.directive = this.value.direction === "column" ? "height: " : "width: ";
-    this.backgroundColor = this.$brighterColor(this.color, 60);
-    this.textColor = this.$idealTextColor(this.backgroundColor);
-  },
   computed: {
     textSize() {
       const offset = this.value.direction === "column" ? this.h : this.w;
@@ -84,6 +75,15 @@ export default {
       const offset = this.value.direction === "column" ? this.w : this.h;
       return 1 * offset;
     }
+  },
+  beforeMount() {
+    for (const item of Object.values(this.value.items)) {
+      item.span = item.span || 1;
+      this.totalSpan += item.span;
+    }
+    this.directive = this.value.direction === "column" ? "height: " : "width: ";
+    this.backgroundColor = this.$brighterColor(this.color, 60);
+    this.textColor = this.$idealTextColor(this.backgroundColor);
   }
 };
 </script>

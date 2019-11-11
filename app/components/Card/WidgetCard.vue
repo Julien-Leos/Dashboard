@@ -1,42 +1,66 @@
 <template>
-  <div
-    class="card"
-    :style="'background: #' + backgroundColor"
-    @mouseover="isOvered = true"
-    @mouseleave="isOvered = false"
-  >
-    <el-button
-      v-show="isOvered"
-      class="actionBtn"
-      type="primary"
-      plain
-      rounded
-      @click="actionBtn"
-      >{{ isConnected ? "Disconnect" : "Connect" }}</el-button
-    >
-    <span
-      class="cardName"
-      :style="'color: #' + nameColor + ';opacity: ' + (isOvered ? 0.4 : 1)"
-    >
-      {{ widget.name | widgetName }}
-    </span>
-    <img
-      class="cardImage"
-      :src="'/' + widget.serviceName + '.png'"
-      :style="'opacity: ' + (isOvered ? 0.1 : 0.2)"
+  <div>
+    <ConfigurePanel
+      :is-visible="configurePanel"
+      :params="widget.params"
+      :params-data="widget.paramsData"
+      @submit="connect"
     />
-    <span
-      class="cardDesc"
-      :style="'color: #' + nameColor + ';opacity: ' + (isOvered ? 0.4 : 1)"
+    <div
+      class="card"
+      :style="'background: #' + backgroundColor"
+      @mouseover="isOvered = true"
+      @mouseleave="isOvered = false"
     >
-      {{ widget.description }}
-    </span>
+      <el-button
+        v-if="isOvered && isConnected"
+        class="actionBtn"
+        style="top: 20%"
+        type="primary"
+        plain
+        rounded
+        @click="configurePanel = true"
+        >Configure</el-button
+      >
+      <el-button
+        v-if="isOvered"
+        class="actionBtn"
+        :style="isConnected ? 'bottom: 20%' : ''"
+        type="primary"
+        plain
+        rounded
+        @click="actionBtn"
+        >{{ isConnected ? "Disconnect" : "Connect" }}</el-button
+      >
+      <span
+        class="cardName"
+        :style="'color: #' + nameColor + ';opacity: ' + (isOvered ? 0.4 : 1)"
+      >
+        {{ widget.name | widgetName }}
+      </span>
+      <img
+        class="cardImage"
+        :src="'/' + widget.serviceName + '.png'"
+        :style="'opacity: ' + (isOvered ? 0.1 : 0.2)"
+      />
+      <span
+        class="cardDesc"
+        :style="'color: #' + nameColor + ';opacity: ' + (isOvered ? 0.4 : 1)"
+      >
+        {{ widget.description }}
+      </span>
+    </div>
   </div>
 </template>
 
 <script>
+import ConfigurePanel from "./ConfigurePanel";
+
 export default {
   name: "WidgetCard",
+  components: {
+    ConfigurePanel
+  },
   filters: {
     widgetName: value => {
       return value
@@ -60,7 +84,8 @@ export default {
     return {
       backgroundColor: "#FFFFFF",
       nameColor: "#000000",
-      isOvered: false
+      isOvered: false,
+      configurePanel: false
     };
   },
   mounted() {
@@ -70,46 +95,28 @@ export default {
   methods: {
     actionBtn() {
       if (this.isConnected) {
-        this.$axios
-          .delete(
-            "users/" +
-              this.$store.state.auth.userId +
-              "/services/" +
-              this.widget.serviceId +
-              "/widgets/" +
-              this.widget.id
-          )
-          .then(response => {
-            if (response) {
-              this.$message({
-                showClose: true,
-                message: response.data.message,
-                type: "success"
-              });
-            }
-            this.$emit("onConnect");
-          })
-          .catch(error => {
-            if (error.response) {
-              this.$message({
-                showClose: true,
-                message: error.response.data.message,
-                type: "error"
-              });
-            }
-          });
+        this.disconnect();
       } else {
+        this.configurePanel = true;
+      }
+    },
+    connect(form) {
+      this.configurePanel = false;
+      if (form) {
         const bodyFormData = new FormData();
+        const urlSuffix = this.isConnected ? "/" + this.widget.id : "";
 
-        bodyFormData.set("name", this.widget.name);
+        if (!this.isConnected) bodyFormData.set("name", this.widget.name);
+        bodyFormData.set("params", JSON.stringify(form));
         this.$axios({
-          method: "post",
+          method: this.isConnected ? "put" : "post",
           url:
             "users/" +
             this.$store.state.auth.userId +
             "/services/" +
             this.widget.serviceId +
-            "/widgets",
+            "/widgets" +
+            urlSuffix,
           data: bodyFormData,
           config: { headers: { "Content-Type": "multipart/form-data" } }
         })
@@ -133,6 +140,37 @@ export default {
             }
           });
       }
+    },
+    disconnect() {
+      this.$axios
+        .delete(
+          "users/" +
+            this.$store.state.auth.userId +
+            "/services/" +
+            this.widget.serviceId +
+            "/widgets/" +
+            this.widget.id
+        )
+        .then(response => {
+          if (response) {
+            this.$message({
+              showClose: true,
+              message: response.data.message,
+              type: "success"
+            });
+          }
+          this.widget.paramsData = {};
+          this.$emit("onConnect");
+        })
+        .catch(error => {
+          if (error.response) {
+            this.$message({
+              showClose: true,
+              message: error.response.data.message,
+              type: "error"
+            });
+          }
+        });
     }
   }
 };
@@ -173,5 +211,9 @@ export default {
 .actionBtn {
   position: absolute;
   z-index: 2;
+}
+
+.el-button + .el-button {
+  margin: 0;
 }
 </style>

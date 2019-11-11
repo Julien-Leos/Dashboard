@@ -18,11 +18,11 @@
       class="cardName"
       :style="'color: #' + nameColor + ';opacity: ' + (isOvered ? 0.4 : 1)"
     >
-      {{ name | serviceName }}
+      {{ service.name | serviceName }}
     </span>
     <img
       class="cardImage"
-      :src="'/' + name + '.png'"
+      :src="'/' + service.name + '.png'"
       :style="'opacity: ' + (isOvered ? 0.4 : 1)"
     />
   </div>
@@ -41,21 +41,9 @@ export default {
     }
   },
   props: {
-    id: {
-      type: String,
-      default: ""
-    },
-    name: {
-      type: String,
-      default: "Service"
-    },
-    isOauth: {
-      type: Boolean,
-      default: false
-    },
-    color: {
-      type: String,
-      default: "FFFFFF"
+    service: {
+      type: Object,
+      default: () => {}
     },
     isConnected: {
       type: Boolean,
@@ -70,15 +58,19 @@ export default {
     };
   },
   mounted() {
-    this.backgroundColor = this.$brighterColor(this.color, 65);
-    this.nameColor = this.$idealTextColor(this.color);
+    this.backgroundColor = this.$brighterColor(this.service.color, 65);
+    this.nameColor = this.$idealTextColor(this.service.color);
   },
   methods: {
     actionBtn() {
       if (this.isConnected) {
         this.$axios({
           method: "delete",
-          url: "users/" + this.$store.state.auth.userId + "/services/" + this.id
+          url:
+            "users/" +
+            this.$store.state.auth.userId +
+            "/services/" +
+            this.service.id
         })
           .then(response => {
             if (response) {
@@ -102,7 +94,7 @@ export default {
       } else {
         const bodyFormData = new FormData();
 
-        bodyFormData.set("name", this.name);
+        bodyFormData.set("name", this.service.name);
         this.$axios({
           method: "post",
           url: "users/" + this.$store.state.auth.userId + "/services",

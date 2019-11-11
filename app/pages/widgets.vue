@@ -108,6 +108,7 @@ export default {
           widget.serviceId = activatedService[0];
           if (activatedWidget) {
             widget.id = activatedWidget[0];
+            widget.paramsData = Object(JSON.parse(activatedWidget[1].params));
             this.activatedWidgets.push(widget);
           } else this.availableWidgets.push(widget);
         });

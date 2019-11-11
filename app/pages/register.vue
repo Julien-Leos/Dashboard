@@ -53,9 +53,7 @@ export default {
               token: response.data.data.accessToken,
               userMail: this.form.email
             });
-            console.log(this.$store.state.auth.userId);
             this.$router.push("/home");
-            console.log(this.$store.state.auth.userId);
           }
         })
         .catch(error => {

@@ -18,10 +18,10 @@
           :i="widget.i"
           :min-w="3"
           :min-h="4"
+          class="widgetContainer"
+          :style="'background-color: #' + widget.color"
           @moved="movedWidget"
           @resized="resizedWidget"
-          :style="'background-color: #' + widget.color"
-          class="widgetContainer"
         >
           <span
             :style="
@@ -107,7 +107,7 @@ export default {
         if (response) {
           Object.entries(response.data.data.services).forEach(service => {
             Object.entries(service[1].widgets).forEach(async widget => {
-              await this.getWidgetAPI(service[1].name, widget[1].name).then(
+              await this.getWidgetAPI(service[1].name, widget[1]).then(
                 data => (widget[1].data = data)
               );
               widget[1].color = this.services.find(
@@ -140,8 +140,16 @@ export default {
     resizedWidget() {
       this.widgetsUpdates = true;
     },
-    getWidgetAPI(serviceName, widgetName) {
-      return this.$axios.get(serviceName + "/" + widgetName).then(response => {
+    getWidgetAPI(serviceName, widget) {
+      const bodyFormData = new FormData();
+
+      bodyFormData.set("params", widget.params);
+      return this.$axios({
+        method: "post",
+        url: serviceName + "/" + widget.name,
+        data: bodyFormData,
+        config: { headers: { "Content-Type": "multipart/form-data" } }
+      }).then(response => {
         if (response) {
           return response.data;
         }

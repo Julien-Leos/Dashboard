@@ -9,11 +9,8 @@
         <ServiceCard
           v-for="service in activatedServices"
           v-else
-          :id="service.id"
           :key="service.id"
-          :name="service['name']"
-          :is-oauth="Boolean(service['isOauth'])"
-          :color="service['color']"
+          :service="service"
           :is-connected="true"
           @onConnect="getActivatedServices"
         />
@@ -29,9 +26,7 @@
           v-for="service in availableServices"
           v-else
           :key="service.id"
-          :name="service['name']"
-          :is-oauth="Boolean(service['isOauth'])"
-          :color="service['color']"
+          :service="service"
           :is-connected="false"
           @onConnect="getActivatedServices"
         />
