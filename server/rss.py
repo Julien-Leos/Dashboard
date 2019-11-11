@@ -13,24 +13,23 @@ rss_page = Blueprint('rss_page', __name__)
 
 @rss_page.route('/rss/article_list', methods=["POST"])
 def article_list():
-    if request.method == "POST":
-        params = json.loads(dict(request.form)["params"][0])
-        response = {
-            "direction": "column",
-            "items": []
-        }
+    params = json.loads(dict(request.form)["params"][0])
+    jsonResponse = {
+        "direction": "column",
+        "items": []
+    }
 
-        rssFlux = requests.get(params["link"]).content
-        channel = ET.fromstring(rssFlux)[0]
-        for item in channel:
-            if item.tag == "item":
-                article = {}
-                for attrib in item:
-                    if attrib.tag == "title":
-                        article["value"] = attrib.text
-                    if attrib.tag == "link":
-                        article["link"] = attrib.text
-                response["items"].append(article)
-                if len(response["items"]) == int(params["number"]):
-                    break
-        return jsonify(response), status.HTTP_200_OK
+    rssFlux = requests.get(params["link"]).content
+    channel = ET.fromstring(rssFlux)[0]
+    for item in channel:
+        if item.tag == "item":
+            article = {}
+            for attrib in item:
+                if attrib.tag == "title":
+                    article["value"] = attrib.text
+                if attrib.tag == "link":
+                    article["link"] = attrib.text
+            jsonResponse["items"].append(article)
+            if len(jsonResponse["items"]) == int(params["number"]):
+                break
+    return jsonify(jsonResponse), status.HTTP_200_OK

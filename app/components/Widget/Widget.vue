@@ -98,8 +98,8 @@ export default {
 }
 
 .widget a {
-  min-width: calc(15% + 4vh);
-  min-height: calc(15% + 4vh);
+  min-width: calc(5% + 4vh);
+  min-height: calc(5% + 4vh);
   padding: 0.8vh;
 }
 

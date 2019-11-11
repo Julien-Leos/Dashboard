@@ -21,11 +21,11 @@
                         ]
                     },
                     {
-                        "name": "live_chat",
-                        "description": "Affichage du chat du live d'un streamer",
+                        "name": "live_best",
+                        "description": "Affichage des lives les plus suivis pour un jeu",
                         "params": [
                             {
-                                "name": "streamer",
+                                "name": "game",
                                 "type": "string"
                             }
                         ]
