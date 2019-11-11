@@ -68,6 +68,7 @@ export default {
         }
       });
     this.getActivatedServices();
+    if (document.location.hash) this.connectWithOuath();
   },
   methods: {
     getActivatedServices() {
@@ -90,6 +91,52 @@ export default {
               } else this.availableServices.push(service);
             });
           }
+        })
+        .catch(error => {
+          if (error.response) {
+            this.$message({
+              showClose: true,
+              message: error.response.data.message,
+              type: "error"
+            });
+          }
+        });
+    },
+    parseUrlHash() {
+      const urlArgs = window.location.hash.split("#")[1];
+      const urlArg = urlArgs.split("&")[0];
+      const data = urlArg.split("=")[1];
+
+      return data;
+    },
+    parseUrlHref() {
+      const url = window.location.href.split("#")[0];
+      const urlArgs = url.split("?")[1];
+      const urlArg = urlArgs.split("&")[0];
+      const data = urlArg.split("=")[1];
+
+      return data;
+    },
+    connectWithOuath() {
+      const bodyFormData = new FormData();
+
+      bodyFormData.set("name", this.parseUrlHref());
+      bodyFormData.set("accessToken", this.parseUrlHash());
+      this.$axios({
+        method: "post",
+        url: "users/" + this.$store.state.auth.userId + "/services",
+        data: bodyFormData,
+        config: { headers: { "Content-Type": "multipart/form-data" } }
+      })
+        .then(response => {
+          if (response) {
+            this.$message({
+              showClose: true,
+              message: response.data.message,
+              type: "success"
+            });
+          }
+          this.getActivatedServices();
         })
         .catch(error => {
           if (error.response) {

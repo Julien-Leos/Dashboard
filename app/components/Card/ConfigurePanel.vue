@@ -64,15 +64,15 @@ export default {
       }
     };
   },
+  computed: {
+    computedIsVisible() {
+      return this.isVisible;
+    }
+  },
   mounted() {
     this.saveParamsData = JSON.parse(JSON.stringify(this.paramsData));
     for (const item of Object.entries(this.paramsData)) {
       this.$set(this.form, item[0], item[1]);
-    }
-  },
-  computed: {
-    computedIsVisible() {
-      return this.isVisible;
     }
   },
   methods: {

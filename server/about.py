@@ -6,6 +6,7 @@ from flask import Blueprint
 
 about_page = Blueprint('about_page', __name__)
 
+
 @about_page.route('/about.json')
 def about():
     ip = socket.gethostbyname(socket.gethostname())

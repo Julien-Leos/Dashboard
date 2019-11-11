@@ -9,10 +9,10 @@ from flask_api import status
 twitch_page = Blueprint('twitch_page', __name__)
 
 
-@twitch_page.route('/twitch/accessToken', methods=["POST"])
-def accessToken():
-    if request.method == "POST":
-        params = request.form
-        accessToken = ""
+@twitch_page.route('/twitch/oauth2', methods=["GET"])
+def oauth2():
+    clientId = "apxc8zgwnv9ggecemvoesem2u484i5"
+    redirectUri = "http://localhost:3000/services?from=twitch"
+    scope = "user:edit"
 
-        return jsonify(accessToken), status.HTTP_200_OK
+    return jsonify("https://id.twitch.tv/oauth2/authorize?client_id=" + clientId + "&redirect_uri=" + redirectUri + "&response_type=token&scope=" + scope)
