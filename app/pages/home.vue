@@ -20,8 +20,8 @@
           :min-h="4"
           class="widgetContainer"
           :style="'background-color: #' + widget.color"
-          @moved="movedWidget"
-          @resized="resizedWidget"
+          @moved="widgetsUpdates = true"
+          @resized="widgetsUpdates = true"
         >
           <span
             :style="
@@ -63,7 +63,7 @@ export default {
   filters: {
     widgetName: value => {
       return value
-        .replace("_", " ")
+        .replace(/_/gi, " ")
         .split(" ")
         .map(element => element[0].toUpperCase() + element.slice(1))
         .join(" ");
@@ -74,14 +74,7 @@ export default {
       services: [],
       widgets: [],
       widgetsUpdates: false,
-      testData: {
-        direction: "column",
-        items: [
-          {
-            value: 5
-          }
-        ]
-      }
+      intervalIds: []
     };
   },
   async mounted() {
@@ -107,6 +100,7 @@ export default {
         if (response) {
           Object.entries(response.data.data.services).forEach(service => {
             Object.entries(service[1].widgets).forEach(async widget => {
+              this.setWidgetTimer(service[1], widget[1]);
               await this.getWidgetAPI(service[1].name, widget[1]).then(
                 data => (widget[1].data = data)
               );
@@ -133,17 +127,26 @@ export default {
         }
       });
   },
+  beforeDestroy() {
+    for (const id of Object.values(this.intervalIds)) {
+      clearInterval(id);
+    }
+  },
   methods: {
-    movedWidget() {
-      this.widgetsUpdates = true;
-    },
-    resizedWidget() {
-      this.widgetsUpdates = true;
+    setWidgetTimer(service, widget) {
+      this.intervalIds.push(
+        window.setInterval(async () => {
+          await this.getWidgetAPI(service.name, widget).then(
+            data => (widget.data = data)
+          );
+        }, widget.timer * 1000 * 60)
+      );
     },
     getWidgetAPI(serviceName, widget) {
       const bodyFormData = new FormData();
 
       bodyFormData.set("params", widget.params);
+      bodyFormData.set("userId", this.$store.state.auth.userId);
       return this.$axios({
         method: "post",
         url: serviceName + "/" + widget.name,

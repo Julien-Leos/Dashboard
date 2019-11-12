@@ -30,6 +30,11 @@ def userWidgets(userId, serviceId, widgetId):
             "mandatory": True,
             "default": None
         },
+        "timer": {
+            "type": float,
+            "mandatory": True,
+            "default": None
+        },
         "x": {
             "type": int,
             "mandatory": False,

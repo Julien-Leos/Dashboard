@@ -98,9 +98,9 @@ export default {
 }
 
 .widget a {
-  min-width: calc(5% + 4vh);
-  min-height: calc(5% + 4vh);
-  padding: 0.8vh;
+  min-width: calc(3% + 4vh);
+  min-height: calc(3% + 4vh);
+  padding: 0.5vh 1.5vh 0.5vh 0.5vh;
 }
 
 .centeredDisplay {

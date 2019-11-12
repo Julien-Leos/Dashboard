@@ -3,6 +3,8 @@ from flask import jsonify
 from flask_cors import CORS
 from flask_api import status
 
+from firebase import database
+
 from about import about_page
 from login import login_page
 from users import users_page
@@ -13,8 +15,9 @@ from userWidgets import userWidgets_page
 
 from rss import rss_page
 from twitch import twitch_page
+from intra_epitech import intra_epitech_page
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 CORS(app)
 
 app.register_blueprint(about_page)
@@ -28,6 +31,7 @@ app.register_blueprint(userWidgets_page)
 
 app.register_blueprint(rss_page)
 app.register_blueprint(twitch_page)
+app.register_blueprint(intra_epitech_page)
 
 
 def getDict(child):
@@ -40,6 +44,12 @@ def getActualUser(accessToken, users):
             return {"key": userId, "value": user}
     return None
 
+
+def getServiceAccesToken(userId, serviceName):
+    services = getDict(database.child('users').child(userId).child("services"))
+    for service in services.values():
+        if service["name"] == serviceName:
+            return service["accessToken"]
 
 def checkIfInt(param):
     try:

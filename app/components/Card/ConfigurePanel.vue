@@ -8,10 +8,19 @@
       <el-form-item
         v-for="param in params"
         :key="param.name"
-        :label="param.name | ParamName"
+        :label="param.desc"
       >
         <el-input v-model="form[param.name]" :type="typeMap[param.type]" />
       </el-form-item>
+      <el-form-item label="Timer">
+        <el-input v-model="timer" type="number"
+          ><template slot="prepend"
+            >Each</template
+          ><template slot="append"
+            >minutes</template
+          ></el-input
+        ></el-form-item
+      >
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button
@@ -29,15 +38,6 @@
 <script>
 export default {
   name: "ConfigurePanel",
-  filters: {
-    ParamName: value => {
-      return value
-        .replace("_", " ")
-        .split(" ")
-        .map(element => element[0].toUpperCase() + element.slice(1))
-        .join(" ");
-    }
-  },
   props: {
     isVisible: {
       type: Boolean,
@@ -52,12 +52,17 @@ export default {
       default: () => {
         return {};
       }
+    },
+    timerData: {
+      type: Number,
+      default: 10
     }
   },
   data: () => {
     return {
       form: {},
       saveParamsData: {},
+      timer: 10,
       typeMap: {
         string: "text",
         integer: "number"
@@ -70,6 +75,7 @@ export default {
     }
   },
   mounted() {
+    this.timer = this.timerData || 10;
     this.saveParamsData = JSON.parse(JSON.stringify(this.paramsData));
     for (const item of Object.entries(this.paramsData)) {
       this.$set(this.form, item[0], item[1]);
@@ -77,14 +83,14 @@ export default {
   },
   methods: {
     checkForm() {
-      if (Object.keys(this.form).length !== this.params.length) {
+      if (Object.keys(this.form).length !== this.params.length || !this.timer) {
         this.$message({
           showClose: true,
           message: "One of the parameter is empty.",
           type: "error"
         });
       } else {
-        this.$emit("submit", this.form);
+        this.$emit("submit", { form: this.form, timer: this.timer });
       }
     }
   }

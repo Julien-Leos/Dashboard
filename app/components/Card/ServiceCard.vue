@@ -34,7 +34,7 @@ export default {
   filters: {
     serviceName: value => {
       return value
-        .replace("_", " ")
+        .replace(/_/gi, " ")
         .split(" ")
         .map(element => element[0].toUpperCase() + element.slice(1))
         .join(" ");
@@ -133,7 +133,7 @@ export default {
     },
     getOauthCallback() {
       this.$axios.get(this.service.name + "/oauth2").then(response => {
-        window.open(response.data);
+        window.open(response.data, "_self");
       });
     }
   }

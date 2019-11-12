@@ -1,125 +1,184 @@
 {
-    "client": {
-        "host": "0.0.0.0"
-    },
-    "server": {
-        "current_time": 0,
-        "services": [
-            {
-                "name": "twitch",
-                "isOauth": true,
-                "color": "6441A4",
-                "widgets": [
-                    {
-                        "name": "live_viewer",
-                        "description": "Affichage du nombre de viewer du live d'un streamer",
-                        "params": [
-                            {
-                                "name": "streamer",
-                                "type": "string"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "live_best",
-                        "description": "Affichage des lives les plus suivis pour un jeu",
-                        "params": [
-                            {
-                                "name": "game",
-                                "type": "string"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "streamer_sub",
-                        "description": "Affichage du nombre d'abonn\u00e9 d'un streamer",
-                        "params": [
-                            {
-                                "name": "streamer",
-                                "type": "string"
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                "name": "intra_epitech",
-                "isOauth": true,
-                "color": "005FA9",
-                "widgets": [
-                    {
-                        "name": "module_info",
-                        "description": "Affichage des informations li\u00e9es \u00e0 un module",
-                        "params": [
-                            {
-                                "name": "module",
-                                "type": "string"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "activities",
-                        "description": "Affichage des activit\u00e9es \u00e0 une date pr\u00e9cise",
-                        "params": [
-                            {
-                                "name": "date",
-                                "type": "string"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "netsoul",
-                        "description": "Affichage du temps de pr\u00e9sence \u00e0 une date ou une semaine pr\u00e9cise",
-                        "params": [
-                            {
-                                "name": "date",
-                                "type": "string"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "flags",
-                        "description": "Affichage des diff\u00e9rents flags de l'\u00e9tudiant",
-                        "params": [
-                            {
-                                "name": "flag_type",
-                                "type": "string"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "unregistered_instances",
-                        "description": "Affichage des instances (activit\u00e9s, projets, modules) auxquels l'\u00e9tudiant n'est pas inscrit",
-                        "params": [
-                            {
-                                "name": "instance_type",
-                                "type": "string"
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                "name": "rss",
-                "isOauth": false,
-                "color": "EE802F",
-                "widgets": [
-                    {
-                        "name": "article_list",
-                        "description": "Affichage de la liste des derniers articles",
-                        "params": [
-                            {
-                                "name": "link",
-                                "type": "string"
-                            },
-                            {
-                                "name": "number",
-                                "type": "integer"
-                            }
-                        ]
-                    }
-                ]
-            }
+  "client": {
+    "host": "0.0.0.0"
+  },
+  "server": {
+    "current_time": 0,
+    "services": [
+      {
+        "name": "twitch",
+        "isOauth": true,
+        "color": "6441A4",
+        "widgets": [
+          {
+            "name": "stream_viewers",
+            "description": "Number of viewers for a stream",
+            "params": [
+              {
+                "name": "streamer",
+                "desc": "Streamer",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "best_streams_for_game",
+            "description": "Most viewed streams for a game",
+            "params": [
+              {
+                "name": "game",
+                "desc": "Game",
+                "type": "string"
+              },
+              {
+                "name": "number",
+                "desc": "Number of stream displayed",
+                "type": "integer"
+              }
+            ]
+          },
+          {
+            "name": "streamer_followers",
+            "description": "Number of followers for a streamer",
+            "params": [
+              {
+                "name": "streamer",
+                "desc": "Streamer",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "moderators_events",
+            "description": "Events of moderation for a specific user on your channel",
+            "params": [
+              {
+                "name": "user",
+                "desc": "User",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "ban_events",
+            "description": "Events of banishment for a specific user on your channel",
+            "params": [
+              {
+                "name": "user",
+                "desc": "User",
+                "type": "string"
+              }
+            ]
+          }
         ]
-    }
+      },
+      {
+        "name": "intra_epitech",
+        "isOauth": true,
+        "color": "005FA9",
+        "widgets": [
+          {
+            "name": "module_info",
+            "description": "Module's informations",
+            "params": [
+              {
+                "name": "module",
+                "desc": "Module",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "activities",
+            "description": "Day's activities at a specific date",
+            "params": [
+              {
+                "name": "date",
+                "desc": "Date (YYYY/MM/DD)",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "day_netsoul",
+            "description": "Log netsoul for a specific day",
+            "params": [
+              {
+                "name": "date",
+                "desc": "Date (YYYY/MM/DD)",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "month_netsoul",
+            "description": "Log netsoul for a specific month (per week)",
+            "params": [
+              {
+                "name": "date",
+                "desc": "Date (YYYY/MM)",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "flags",
+            "description": "Student's flags",
+            "params": [
+              {
+                "name": "flag_type",
+                "desc": "Type of flags",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "unregistered_instances",
+            "description": "Instances (activities, projects, modules) in which the student is unregistered",
+            "params": [
+              {
+                "name": "instance_type",
+                "desc": "Instance type",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "binome_projects",
+            "description": "List projects done with a specific student",
+            "params": [
+              {
+                "name": "student",
+                "desc": "Student Login (firstname.lastname)",
+                "type": "string"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "rss",
+        "isOauth": false,
+        "color": "EE802F",
+        "widgets": [
+          {
+            "name": "article_list",
+            "description": "List of articles in a RSS flux",
+            "params": [
+              {
+                "name": "link",
+                "desc": "RSS flux's link",
+                "type": "string"
+              },
+              {
+                "name": "number",
+                "desc": "Number of articles displayed",
+                "type": "integer"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

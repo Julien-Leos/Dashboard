@@ -4,6 +4,7 @@
       :is-visible="configurePanel"
       :params="widget.params"
       :params-data="widget.paramsData"
+      :timer-data="parseFloat(widget.timer)"
       @submit="connect"
     />
     <div
@@ -30,7 +31,7 @@
         plain
         rounded
         @click="actionBtn"
-        >{{ isConnected ? "Disconnect" : "Connect" }}</el-button
+        >{{ isConnected ? "Remove" : "Add" }}</el-button
       >
       <span
         class="cardName"
@@ -64,7 +65,7 @@ export default {
   filters: {
     widgetName: value => {
       return value
-        .replace("_", " ")
+        .replace(/_/gi, " ")
         .split(" ")
         .map(element => element[0].toUpperCase() + element.slice(1))
         .join(" ");
@@ -100,14 +101,15 @@ export default {
         this.configurePanel = true;
       }
     },
-    connect(form) {
+    connect(data) {
       this.configurePanel = false;
-      if (form) {
+      if (data) {
         const bodyFormData = new FormData();
         const urlSuffix = this.isConnected ? "/" + this.widget.id : "";
 
         if (!this.isConnected) bodyFormData.set("name", this.widget.name);
-        bodyFormData.set("params", JSON.stringify(form));
+        bodyFormData.set("timer", data.timer);
+        bodyFormData.set("params", JSON.stringify(data.form));
         this.$axios({
           method: this.isConnected ? "put" : "post",
           url:
