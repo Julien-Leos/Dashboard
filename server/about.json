@@ -78,57 +78,34 @@
         "color": "005FA9",
         "widgets": [
           {
-            "name": "module_info",
-            "description": "Module's informations",
-            "params": [
-              {
-                "name": "module",
-                "desc": "Module",
-                "type": "string"
-              }
-            ]
-          },
-          {
             "name": "activities",
             "description": "Day's activities at a specific date",
             "params": [
               {
                 "name": "date",
-                "desc": "Date (YYYY/MM/DD)",
-                "type": "string"
+                "desc": "Date",
+                "type": "date"
               }
             ]
           },
           {
-            "name": "day_netsoul",
-            "description": "Log netsoul for a specific day",
+            "name": "netsoul",
+            "description": "Log netsoul for a specific duration (daily, weekly, ...)",
             "params": [
               {
-                "name": "date",
-                "desc": "Date (YYYY/MM/DD)",
-                "type": "string"
-              }
-            ]
-          },
-          {
-            "name": "month_netsoul",
-            "description": "Log netsoul for a specific month (per week)",
-            "params": [
+                "name": "duration",
+                "desc": "Duration",
+                "type": "dateRange"
+              },
               {
-                "name": "date",
-                "desc": "Date (YYYY/MM)",
-                "type": "string"
-              }
-            ]
-          },
-          {
-            "name": "flags",
-            "description": "Student's flags",
-            "params": [
-              {
-                "name": "flag_type",
-                "desc": "Type of flags",
-                "type": "string"
+                "name": "method",
+                "desc": "Display method",
+                "type": "list",
+                "list": [
+                  {"label": "Daily", "value": "daily"},
+                  {"label": "Weekly", "value": "weekly"},
+                  {"label": "Monthly", "value": "monthly"}
+                ]
               }
             ]
           },
@@ -139,7 +116,15 @@
               {
                 "name": "instance_type",
                 "desc": "Instance type",
-                "type": "string"
+                "type": "list",
+                "list": [
+                  {"label": "Activities", "value": "activites"},
+                  {"label": "Projects", "value": "projets"},
+                  {"label": "Modules", "value": "modules"},
+                  {"label": "Susies", "value": "susies"},
+                  {"label": "Interships", "value": "stages"},
+                  {"label": "Tickets", "value": "tickets"}
+                ]
               }
             ]
           },
@@ -148,9 +133,41 @@
             "description": "List projects done with a specific student",
             "params": [
               {
-                "name": "student",
-                "desc": "Student Login (firstname.lastname)",
+                "name": "firstname",
+                "desc": "Student Firstname",
                 "type": "string"
+              },
+              {
+                "name": "lastname",
+                "desc": "Student Lastname",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "name": "year_grades",
+            "description": "Grades of a school year",
+            "params": [
+              {
+                "name": "year",
+                "desc": "Year",
+                "type": "date",
+                "dateType": "year",
+                "dateFormat": "yyyy"
+              },
+              {
+                "name": "grade",
+                "desc": "Grade",
+                "type": "list",
+                "list": [
+                  {"label": "A", "value": "A"},
+                  {"label": "B", "value": "B"},
+                  {"label": "C", "value": "C"},
+                  {"label": "D", "value": "D"},
+                  {"label": "E", "value": "Echec"},
+                  {"label": "Acquired", "value": "Acquis"},
+                  {"label": "None", "value": "-"}
+                ]
               }
             ]
           }

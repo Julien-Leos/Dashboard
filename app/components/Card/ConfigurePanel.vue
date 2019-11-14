@@ -10,7 +10,41 @@
         :key="param.name"
         :label="param.desc"
       >
-        <el-input v-model="form[param.name]" :type="typeMap[param.type]" />
+        <el-select v-if="param.type == 'list'" v-model="form[param.name]">
+          <el-option
+            v-for="item in param.list"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+        <el-date-picker
+          v-else-if="param.type == 'date'"
+          v-model="form[param.name]"
+          :type="param.dateType != undefined ? param.dateType : 'date'"
+          :value-format="
+            param.dateFormat != undefined ? param.dateFormat : 'yyyy-M-d'
+          "
+          placeholder="Pick a date"
+        >
+        </el-date-picker>
+        <el-date-picker
+          v-else-if="param.type == 'dateRange'"
+          v-model="form[param.name]"
+          type="daterange"
+          :value-format="
+            param.dateFormat != undefined ? param.dateFormat : 'yyyy-M-d'
+          "
+          start-placeholder="Start date"
+          end-placeholder="End date"
+        >
+        </el-date-picker>
+        <el-input
+          v-else
+          v-model="form[param.name]"
+          :type="typeMap[param.type]"
+        />
       </el-form-item>
       <el-form-item label="Timer">
         <el-input v-model="timer" type="number"
@@ -97,4 +131,9 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.el-select,
+.el-date-editor {
+  width: 100%;
+}
+</style>
