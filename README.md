@@ -192,10 +192,10 @@ Celui-ci est organisé de la manière suivante:
 
 ```json
 {
-  "client": {---}, 
+  "client": {...}, 
   "server": {
-    "current_time": "---", 
-    "services": [---]
+    "current_time": "...", 
+    "services": [...]
   }
 }
 ```
@@ -203,20 +203,20 @@ Seul le tableau **services** dans l'object **server** va nous intéresser. Il va
 
 Bien, ouvrons ce tableau et voyons comment est formé un **Service**:
 ```json
----
+...
 	{
-	  "name": "---",
-	  "isOauth": ---,
-	  "color": "---",
-	  "widgets": [---]
+	  "name": "...",
+	  "isOauth": ...,
+	  "color": "...",
+	  "widgets": [...]
 	}
----
+...
 ```
 Celui-ci est composé de quatre articles:
 
 |Nom|Type|Description|Exemple|
 |--|--|--|--|
-|name|String|Nom du **Service** (en minuscule)|twitch
+|name|String|Nom du **Service** (en minuscule et snake_case)|twitch
 |isOauth|Boolean|Si le **Service** nécessite une authentification Oauth (ou Oauth2)|true
 |color|String|Couleur du **Service** sous format [hexadécimal](https://fr.wikipedia.org/wiki/Couleur_du_Web#Triplet_hexad%C3%A9cimal)|6441A4
 |widgets|Array|List des Widgets (voir partie **Ajouter un Widget**)| ∅
@@ -225,41 +225,223 @@ Pour ajouter un nouveau **Service**, vous l'aurez compris, il vous faudra ajoute
 
 Une fois ceci fait, le plus gros du travail reste à faire. Pour simplifier, voici la liste des étapes à suivre:
 
- 1. Créer un fichier **[monService].py** *(en remplacant [monService] par le nom de votre **Service** tel que renseigné dans le fichier about.json)*
+ 1. Créer un fichier **monService.py**
 
  2. Copier-coller le code suivant au sein de ce fichier
-```python
-import requests
-import json
+	```python
+	import requests
+	import json
 
-from flask import Blueprint, request, jsonify
-from flask_api import status
+	from flask import Blueprint, request, jsonify
+	from flask_api import status
 
-import app
-monservice_page = Blueprint('monservice_page', __name__)
+	import app
+	monservice_page = Blueprint('monservice_page', __name__)
 
-# TO-DO: Modifiez par l'id client fourni par votre Service
-clientId = "123456789abcdefgh"
-
-@monservice_page.route('/monservice/oauth', methods=["GET"])
-def	oauth():
-redirectUri =  "http://localhost:3000/services?from=monservice"
-
-# TO-DO: Modifiez cette URL en fonction de la documentation de votre Service. Elle devrait normalement systématiquement contenir une URI de redirection ainsi qu'un id client.
-return jsonify("https://monservice/oauth2/authorize?client_id="  + clientId +  "&redirect_uri="  + redirectUri +  "&response_type=token")
+	# TO-DO: Modifiez par l'id client fourni par votre Service
+	clientId = "123456789abcdefgh"
 
 
-@monservice_page.route('/monservice/oauth2', methods=["POST"])
-def	oauth2():
-body = request.form.to_dict()
+	@monservice_page.route('/monservice/oauth', methods=["GET"])
+	def oauth():
+		redirectUri =  "http://localhost:3000/services?from=monservice"
 
-# TO-DO: Modifiez cette ligne en fonction de l'API de votre Service, de manière à récupérer l'accessToken.
-accessToken = body["url"].split("#")[1].split("&")[0].split("=")[1]
+		# TO-DO: Modifiez cette URL en fonction de la documentation de votre Service. Elle devrait normalement systématiquement contenir une URI de redirection ainsi qu'un id client.
+		return jsonify("https://monservice/oauth2/authorize?client_id="  + clientId +  "&redirect_uri="  + redirectUri +  "&response_type=token")
 
-app.setServiceAccesToken(body["userId"], "monservice", accessToken)
-return jsonify("Oauth2: OK"), status.HTTP_200_OK
-```
+
+	@monservice_page.route('/monservice/oauth2', methods=["POST"])
+	def oauth2():
+		body = request.form.to_dict()
+
+		# TO-DO: Modifiez cette ligne en fonction de l'API de votre Service, de manière à récupérer l'accessToken.
+		accessToken = body["url"].split("#")[1].split("&")[0].split("=")[1]
+
+		app.setServiceAccesToken(body["userId"], "monservice", accessToken)
+		return jsonify("Oauth2: OK"), status.HTTP_200_OK
+	```
 3. Toujours au sein de ce fichier, modifiez TOUTES les références à **monservice** par le nom de votre **Service** tel que renseigné dans le fichier about.json.
+
+> INFO: Si votre **Service** ne nécessite pas d'authentification, vous pouvez supprimer les routes **monservice/oauth** et **monservice/oauth2** ainsi que la variable **clientId**, vous n'en n'aurez pas besoin.
 
 4. Effectuez l'ensembles des **TO-DO** comme décrit dans le commentaire qui suit.
 > INFO: Dans la fonction **oauth2**, la variable **body** contient un attribu **url**. Celui-ci à pour valeur soit l'URL de redirection de l'API de votre **Service** (avec dans ce cas la, l'accessToken dans les paramètres de l'URL), soit dans la partie hachée de l'URL de redirection de l’API de votre **Service** (avec dans ce cas la, l'accessToken dans les paramètres de la partie hachée de l'URL).
+
+5. Se rendre dans le fichier **app.py**
+	1. Ajouter la ligne suivante en dessous du commentaire **# 5.1**
+	```python
+	from monservice import monservice_page
+	```
+	2. Ajouter la ligne suivante en dessous du commentaire **# 5.2**
+	```python
+	app.register_blueprint(monservice_page)
+	```
+
+Félicitation, vous venez d'ajouter votre premier **Service** au **Dashboard**. 
+Merci d'avoir pris le temps d'enrichir ce projet et n'hésitez pas à soumettre votre **Service** à une **Pull-Request** pour que nous puissions l'ajouter comme **Service** officiel.
+
+## Ajouter un Widget
+Pour ajouter un nouveau **Widget**, il va à nouveau vous falloir modifier le fichier **about.json**.
+
+Voici comment s'organise un **Widget** au sein de ce fichier:
+```json
+...
+	{
+	  "name": "...",
+	  "description": "...",
+	  "params": [...]
+	}
+...
+```
+Celui-ci est composé de trois articles:
+
+|Nom|Type|Description|Exemple|
+|--|--|--|--|
+|name|String|Nom du **Widget** (en minuscule et snake_case)|stream_viewers
+|description|String|Description du **Widget**|Number of viewers for a stream
+|params|Array|Liste des paramètres de configuration du **Widget** (voir ci-dessous)|∅
+
+Pour ajouter un nouveau **Widget**, vous l'aurez compris, il vous faudra ajouter et compléter une nouvelle entrée dans le tableau **widgets** d'un des **Service** du fichier **about.json**.
+
+Attardons nous un peu sur le tableau **params** d'un **Widget**. Voilà comment il peut s'organiser:
+```json
+...
+	{
+	  "name": "...",
+	  "desc": "...",
+	  "type": "...",
+	  ...
+	}
+...
+```
+Celui-ci est composé d'au moins trois articles ainsi que plusieurs autres optionnels:
+|Nom|Type|Description|Exemple|
+|--|--|--|--|
+|name|String|Nom du **paramètre** (en minuscule et snake_case)|instance_type
+|description|String|Description du **paramètre**|Type of instance
+|type|String|Type du **paramètre** (voir tableau ci-dessous)|list
+
+Voici la liste de tous les types de **paramètres** supportés par le **Dashboard**:
+|Nom|Description|Paramètre optionnel
+|--|--|--|
+|string|Saisie de texte|∅
+|integer|Saisie d'un nombre|∅
+|list|Liste de choix limité|list
+|date|Date d'un certain type sous un certain format| dateType - dateFormat|
+|dateRange| Encadrement de deux dates sous un certain format| dateFormat
+
+Voici la liste de tous les **paramètres** optionnel et de leur fonctionnement:
+
+ - **list** (Array)
+Est composé de l'ensemble des choix possibles sous la forme suivante:
+	```json
+	{"label": "...", "value": "..."}
+	```
+	- label (String): Tel que le choix va être affiché à l'utilisateur
+	- value (String): Tel que va être retranscrit dans le code
+
+- dateType (String)
+Type de la date. Les types disponibles sont:
+	-	day
+	-	week
+	-	month
+	-	year
+- dateFormat (String)
+Format de la date saisie (manière retranscrite dans le code). Tous les formats sont disponibles à cette [adresse](https://element.eleme.io/#/en-US/component/date-picker#date-formats).
+
+Bien, maintenant que vous êtes famillier avec la manière d'ajouter un **Widget** sur le fichier **about.json**, il est temps d'ajouter le code qui lui est lié. Comme pour l'ajout de **Service**, déroulez les étapes suivantes:
+
+ 1. Copier-coller le code suivant au sein du fichier correspond au **Service** auquel appartient le **Widget**
+	```python
+	@monservice_page.route('/monservice/monwidget', methods=["POST"])
+	def monwidget():
+		params = json.loads(dict(request.form)["params"])
+		userId = dict(request.form)["userId"]
+		accessToken = app.getServiceAccesToken(userId, "monwidget")
+		jsonResponse = {}
+
+		#TO-DO Remplacer ces deux variables par votre Url et votre Header
+		monwidgetAPIUrl = "https://monwidget/abcdef"
+		monwidgetAPIHeader = {"Authorization": "Bearer "  + accessToken}
+
+		monwidgetResponse = json.loads(requests.get(monwidgetAPIUrl, headers=monwidgetAPIHeader).content)
+		
+		#TO-DO Parser monwidgetResponse et remplir jsonResponse ici.
+		
+		return jsonify(jsonResponse), status.HTTP_200_OK
+	```
+2. Modifiez TOUTES les références à **monservice** et **monwidget** par les noms de votre **Service** et de votre **Widget** tel que renseignés dans le fichier **about.json**.
+
+> INFO: Si votre **Service** ne nécessite pas d'authentification, vous pouvez supprimer la variable **accessToken**, vous n'en n'aurez pas besoin.
+
+4. Effectuez l'ensembles des **TO-DO** comme décrit dans le commentaire qui suit.
+
+À ce moment là de l'ajout d'un nouveau **Widget**, vous devriez vous demander comment remplir ce fameux **jsonResponse**. Et bien c'est là toute la puissance de **Dashboard**: en formatant correctement cet object JSON, vous obtiendrez en un rien de temps n'importe quel de **Widget** dont vous avez toujours rêvé.
+
+Voyons un exemple de **jsonResponse** de plus prêt:
+```json
+{
+"direction": "column",
+"items": [
+	{
+		"value": "Montpellier"
+	},
+	{
+		"value": 27
+	}
+]
+}
+```
+
+Dans cet exemple, vous pouvez en un clin d'oeil comprendre qu'il s'agit d'un Widget Météo, affichant la température d'une ville donnée.
+
+Remarquez d'abord l'attribut **direction** qui prend pour valeur **column**. Cela signifie que les informations vont être classé de manière verticale.
+
+Vient ensuite l'attribut **items** qui prend pour valeur un tableau. Celui-ci va contenir l'ensemble des informations du **Widget**.
+
+Pour chaque **item**, l'on retrouve un object ayant l'attribut **value**, c'est le seul attribut obligatoire d'un **item**. Les types de valeur supportés sont:
+
+ - Une String
+ - Un Number
+ - Un Boolean
+ - Un Object de type Widget
+
+Si le dernier type vous à donné mal à la tête c'est normal. En effet, pour assurer la généricité du format des **jsonResponse**, il doit être possible de créer des **Widgets** récursifs, c'est à dire des **Widgets** dans des **Widgets**.
+
+Voyons l'exemple, cette fois-ci plus complexe, suivant :
+```json
+{
+"direction": "column",
+"items": [
+	{
+		"value": "Montpellier"
+	},
+	{
+		"value": {
+			"direction": "row",
+			"items": [
+				{
+					"value": 27
+				},
+				{
+					"value": "Ensoleillé"
+				}
+			]
+		}
+	}
+]
+}
+```
+
+Dans cet exemple, la **value** du second **item** contient un autre object de type **Widget**, cette fois-ci affiché de manière horizontale contenant quant à lui deux **items** ayant pour **value** d'autres informations.
+
+Bien sur, l'on pourrait créer des récursives indéfiniments mais cela n'aurait pas grand intérêt.
+
+Bien, maintenant que la notion de récursive n'a plus de secret pour vous, voyons les différents attributes que l'on peut passer à un **item**:
+|Nom|Type|Optionnel|Description|Exemple|Default
+|--|--|--|--|--|--|
+|value|(voir plus haut)|Non|La valeur à affiché (ou la récursive)|"Montpellier"|∅
+|span|Integer|Oui|Espace occupée par l'**item** en fonction de la somme de tous les **span** du tableau **items**. Ainsi, si un **item** à pour **span** 3 et un autre **item** à pour **span** 1, le premier **item** occupera 75% de l'espace tandis que le second en occupera 25.|3|1
+|link|String|Oui|Lien de redirection en cas de clic sur l'**item**|[https://fr.wikipedia.org/wiki/Hello_world](https://fr.wikipedia.org/wiki/Hello_world)|∅
+
+Et voilà ! C'est enfin terminé ! Vous avez correctement remplis **jsonResponse** ! Il ne vous reste plus qu'à profiter de votre tout nouveau **Widget**.

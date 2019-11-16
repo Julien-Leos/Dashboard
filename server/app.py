@@ -13,6 +13,7 @@ from widgets import widgets_page
 from userServices import userServices_page
 from userWidgets import userWidgets_page
 
+# 5.1: Ajouter l'import de votre fichier ici
 from rss import rss_page
 from twitch import twitch_page
 from intra_epitech import intra_epitech_page
@@ -30,6 +31,7 @@ app.register_blueprint(widgets_page)
 app.register_blueprint(userServices_page)
 app.register_blueprint(userWidgets_page)
 
+# 5.2: Ajouter l'enregistrement de votre service ici
 app.register_blueprint(rss_page)
 app.register_blueprint(twitch_page)
 app.register_blueprint(intra_epitech_page)
