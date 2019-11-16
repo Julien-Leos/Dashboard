@@ -13,12 +13,20 @@ import app
 intra_epitech_page = Blueprint('intra_epitech_page', __name__)
 
 
-@intra_epitech_page.route('/intra_epitech/oauth2', methods=["GET"])
-def oauth2():
+@intra_epitech_page.route('/intra_epitech/oauth', methods=["GET"])
+def oauth():
     redirectUri = "http://localhost:3000/services?from=intra_epitech"
 
     return jsonify("http://localhost:3000/other/intra_epitech/autologin?redirect_uri=" + redirectUri)
 
+
+@intra_epitech_page.route('/intra_epitech/oauth2', methods=["POST"])
+def oauth2():
+    body = request.form.to_dict()
+
+    accessToken = body["url"].split("#")[1].split("&")[0].split("=")[1]
+    app.setServiceAccesToken(body["userId"], "intra_epitech", accessToken)
+    return jsonify("Oauth2: OK"), status.HTTP_200_OK
 
 @intra_epitech_page.route('/intra_epitech/unregistered_instances', methods=["POST"])
 def unregistered_instances():

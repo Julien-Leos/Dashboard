@@ -16,6 +16,7 @@ from userWidgets import userWidgets_page
 from rss import rss_page
 from twitch import twitch_page
 from intra_epitech import intra_epitech_page
+from yammer import yammer_page
 
 app = Flask(__name__, static_url_path='')
 CORS(app)
@@ -32,6 +33,7 @@ app.register_blueprint(userWidgets_page)
 app.register_blueprint(rss_page)
 app.register_blueprint(twitch_page)
 app.register_blueprint(intra_epitech_page)
+app.register_blueprint(yammer_page)
 
 
 def getDict(child):
@@ -43,6 +45,13 @@ def getActualUser(accessToken, users):
         if user["accessToken"] == accessToken:
             return {"key": userId, "value": user}
     return None
+
+
+def setServiceAccesToken(userId, serviceName, accessToken):
+    services = getDict(database.child('users').child(userId).child("services"))
+    for (serviceId, service) in services.items():
+        if service["name"] == serviceName:
+            database.child('users').child(userId).child("services").child(serviceId).update({"accessToken": accessToken})
 
 
 def getServiceAccesToken(userId, serviceName):

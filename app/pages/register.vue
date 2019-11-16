@@ -10,6 +10,7 @@
       <el-form-item label="Password">
         <el-input
           v-model="form.password"
+          type="password"
           placeholder="Enter a strong password"
         ></el-input>
       </el-form-item>
@@ -42,18 +43,14 @@ export default {
         data: bodyFormData,
         config: { headers: { "Content-Type": "multipart/form-data" } }
       })
-        .then(async response => {
+        .then(response => {
           if (response) {
             this.$message({
               showClose: true,
               message: response.data.message,
               type: "success"
             });
-            await this.$store.dispatch("auth/login", {
-              token: response.data.data.accessToken,
-              userMail: this.form.email
-            });
-            this.$router.push("/home");
+            this.$router.push("/login");
           }
         })
         .catch(error => {

@@ -12,7 +12,7 @@
           :key="service.id"
           :service="service"
           :is-connected="true"
-          @onConnect="getActivatedServices"
+          @onAction="actionBtn"
         />
       </el-main>
     </el-container>
@@ -28,7 +28,7 @@
           :key="service.id"
           :service="service"
           :is-connected="false"
-          @onConnect="getActivatedServices"
+          @onAction="actionBtn"
         />
       </el-main>
     </el-container>
@@ -67,10 +67,77 @@ export default {
           });
         }
       });
-    this.getActivatedServices();
-    if (document.location.hash) this.connectWithOuath();
+    if (document.location.hash || document.location.href.split("?").length > 1)
+      this.connectService(null);
+    else this.getActivatedServices();
   },
   methods: {
+    actionBtn(params) {
+      if (params[0] === true) this.connectService(params[1]);
+      else this.disconnectService(params[1]);
+    },
+    async connectService(service) {
+      let serviceName = "";
+      const bodyFormData = new FormData();
+
+      if (service) serviceName = service.name;
+      else serviceName = this.parseUrlHref();
+
+      bodyFormData.set("name", serviceName);
+      bodyFormData.set("accessToken", "null");
+      await this.$axios({
+        method: "post",
+        url: "users/" + this.$store.state.auth.userId + "/services",
+        data: bodyFormData,
+        config: { headers: { "Content-Type": "multipart/form-data" } }
+      })
+        .then(response => {
+          if (response) {
+            this.$message({
+              showClose: true,
+              message: response.data.message,
+              type: "success"
+            });
+            if (!service) this.oauth2Callback(serviceName);
+          }
+        })
+        .catch(error => {
+          if (error.response) {
+            this.$message({
+              showClose: true,
+              message: error.response.data.message,
+              type: "error"
+            });
+          }
+        });
+      this.getActivatedServices();
+    },
+    async disconnectService(service) {
+      await this.$axios({
+        method: "delete",
+        url:
+          "users/" + this.$store.state.auth.userId + "/services/" + service.id
+      })
+        .then(response => {
+          if (response) {
+            this.$message({
+              showClose: true,
+              message: response.data.message,
+              type: "success"
+            });
+          }
+        })
+        .catch(error => {
+          if (error.response) {
+            this.$message({
+              showClose: true,
+              message: error.response.data.message,
+              type: "error"
+            });
+          }
+        });
+      this.getActivatedServices();
+    },
     getActivatedServices() {
       this.$axios
         .get("users/" + this.$store.state.auth.userId + "/services")
@@ -102,51 +169,30 @@ export default {
           }
         });
     },
-    parseUrlHash() {
-      const urlArgs = window.location.hash.split("#")[1];
-      const urlArg = urlArgs.split("&")[0];
-      const data = urlArg.split("=")[1];
-
-      return data;
-    },
     parseUrlHref() {
       const url = window.location.href.split("#")[0];
       const urlArgs = url.split("?")[1];
-      const urlArg = urlArgs.split("&")[0];
-      const data = urlArg.split("=")[1];
+      const urlArg = urlArgs.split("&");
+      const data = urlArg
+        .find(arg => arg.split("=")[0] === "from")
+        .split("=")[1];
 
       return data;
     },
-    connectWithOuath() {
+    async oauth2Callback(serviceName) {
       const bodyFormData = new FormData();
 
-      bodyFormData.set("name", this.parseUrlHref());
-      bodyFormData.set("accessToken", this.parseUrlHash());
-      this.$axios({
+      bodyFormData.set(
+        "url",
+        window.location.hash ? window.location.hash : window.location.href
+      );
+      bodyFormData.set("userId", this.$store.state.auth.userId);
+      await this.$axios({
         method: "post",
-        url: "users/" + this.$store.state.auth.userId + "/services",
+        url: serviceName + "/oauth2",
         data: bodyFormData,
         config: { headers: { "Content-Type": "multipart/form-data" } }
-      })
-        .then(response => {
-          if (response) {
-            this.$message({
-              showClose: true,
-              message: response.data.message,
-              type: "success"
-            });
-          }
-          this.getActivatedServices();
-        })
-        .catch(error => {
-          if (error.response) {
-            this.$message({
-              showClose: true,
-              message: error.response.data.message,
-              type: "error"
-            });
-          }
-        });
+      });
     }
   }
 };

@@ -64,75 +64,15 @@ export default {
   methods: {
     actionBtn() {
       if (this.isConnected) {
-        this.disconnect();
+        this.$emit("onAction", [false, this.service]);
       } else if (this.service.isOauth) {
         this.getOauthCallback();
       } else {
-        this.connectWithoutOuath();
+        this.$emit("onAction", [true, this.service]);
       }
     },
-    connectWithoutOuath() {
-      const bodyFormData = new FormData();
-
-      bodyFormData.set("name", this.service.name);
-      bodyFormData.set("accessToken", "null");
-      this.$axios({
-        method: "post",
-        url: "users/" + this.$store.state.auth.userId + "/services",
-        data: bodyFormData,
-        config: { headers: { "Content-Type": "multipart/form-data" } }
-      })
-        .then(response => {
-          if (response) {
-            this.$message({
-              showClose: true,
-              message: response.data.message,
-              type: "success"
-            });
-          }
-          this.$emit("onConnect");
-        })
-        .catch(error => {
-          if (error.response) {
-            this.$message({
-              showClose: true,
-              message: error.response.data.message,
-              type: "error"
-            });
-          }
-        });
-    },
-    disconnect() {
-      this.$axios({
-        method: "delete",
-        url:
-          "users/" +
-          this.$store.state.auth.userId +
-          "/services/" +
-          this.service.id
-      })
-        .then(response => {
-          if (response) {
-            this.$message({
-              showClose: true,
-              message: response.data.message,
-              type: "success"
-            });
-          }
-          this.$emit("onConnect");
-        })
-        .catch(error => {
-          if (error.response) {
-            this.$message({
-              showClose: true,
-              message: error.response.data.message,
-              type: "error"
-            });
-          }
-        });
-    },
     getOauthCallback() {
-      this.$axios.get(this.service.name + "/oauth2").then(response => {
+      this.$axios.get(this.service.name + "/oauth").then(response => {
         window.open(response.data, "_self");
       });
     }

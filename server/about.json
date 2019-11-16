@@ -195,6 +195,40 @@
             ]
           }
         ]
+      },
+      {
+        "name": "yammer",
+        "isOauth": true,
+        "color": "0079D5",
+        "widgets": [
+          {
+            "name": "group_message",
+            "description": "Messages of a group",
+            "params": [
+              {
+                "name": "url",
+                "desc": "Url of the group",
+                "type": "string"
+              },
+              {
+                "name": "number",
+                "desc": "Number of messages displayed",
+                "type": "integer"
+              }
+            ]
+          },
+          {
+            "name": "group_list",
+            "description": "List of user's groups",
+            "params": [
+              {
+                "name": "email",
+                "desc": "User's email",
+                "type": "string"
+              }
+            ]
+          }
+        ]
       }
     ]
   }

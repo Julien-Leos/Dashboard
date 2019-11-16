@@ -27,8 +27,8 @@ def userServices(userId, serviceId):
         },
         "accessToken": {
             "type": str,
-            "mandatory": True,
-            "default": None
+            "mandatory": False,
+            "default": ""
         }
     }
 

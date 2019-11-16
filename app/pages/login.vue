@@ -5,7 +5,11 @@
         <el-input v-model="form.email" placeholder="Email"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="form.password" placeholder="Password"></el-input>
+        <el-input
+          v-model="form.password"
+          type="password"
+          placeholder="Password"
+        ></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit">Login</el-button>
