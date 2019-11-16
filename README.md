@@ -438,11 +438,12 @@ Dans cet exemple, la **value** du second **item** contient un autre object de ty
 Bien sur, l'on pourrait créer des récursives indéfiniments mais cela n'aurait pas grand intérêt.
 
 Bien, maintenant que la notion de récursive n'a plus de secret pour vous, voyons les différents attributes que l'on peut passer à un **item**:
+
 |Nom|Type|Optionnel|Description|Exemple|Default
 |--|--|--|--|--|--|
 |value|(voir plus haut)|Non|La valeur à affiché (ou la récursive)|"Montpellier"|∅
 |span|Integer|Oui|Espace occupée par l'**item** en fonction de la somme de tous les **span** du tableau **items**. Ainsi, si un **item** à pour **span** 3 et un autre **item** à pour **span** 1, le premier **item** occupera 75% de l'espace tandis que le second en occupera 25.|3|1
-|link|String|Oui|Lien de redirection en cas de clic sur l'**item**|[https://fr.wikipedia.org/wiki/Hello_world](https://fr.wikipedia.org/wiki/Hello_world)|∅
+|link|String|Oui|Lien de redirection en cas de clic sur l'**item**|[https://fr.wikipedia.org/wiki/Hello_world](https://fr.wikipedia.org/wiki/Hello_world) |∅
 
 Et voilà ! C'est enfin terminé ! Vous avez correctement remplis **jsonResponse** ! Il ne vous reste plus qu'à profiter de votre tout nouveau **Widget**.
 
