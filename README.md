@@ -264,12 +264,3 @@ return jsonify("Oauth2: OK"), status.HTTP_200_OK
 4. Effectuez l'ensembles des **TO-DO** comme décrit dans le commentaire qui suit.
 > INFO: Dans la fonction **oauth2**, la variable **body** contient un attribu **url**. Celui-ci à pour valeur soit l'URL de redirection de l'API de votre **Service** (avec dans ce cas la, l'accessToken dans les paramètres de l'URL), soit dans la partie hachée de l'URL de redirection de l’API de votre **Service** (avec dans ce cas la, l'accessToken dans les paramètres de la partie hachée de l'URL).
 
-| Status | Response  |
-| ------ | --------- |
-| 200    | `json`                          |
-|        | `   {`                          |
-|        | ` "id": 10,`                    |
-|        | ` "username": "alanpartridge",` |
-|        | ` more code...`                 |
-|        | `}`                             |
-| 400    |                                 |
