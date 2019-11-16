@@ -445,3 +445,4 @@ Bien, maintenant que la notion de récursive n'a plus de secret pour vous, voyon
 |link|String|Oui|Lien de redirection en cas de clic sur l'**item**|[https://fr.wikipedia.org/wiki/Hello_world](https://fr.wikipedia.org/wiki/Hello_world)|∅
 
 Et voilà ! C'est enfin terminé ! Vous avez correctement remplis **jsonResponse** ! Il ne vous reste plus qu'à profiter de votre tout nouveau **Widget**.
+
