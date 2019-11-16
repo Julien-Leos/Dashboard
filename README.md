@@ -15,7 +15,7 @@
 	 3. Arborescence
 	 4. Ajouter un Service
 	 5. Ajouter un Widget
-	 6. Rapide tour de l'API
+	 6. Rapide tour de l'architecture
 
 # Documentation Utilisateur
 
@@ -443,7 +443,11 @@ Bien, maintenant que la notion de récursive n'a plus de secret pour vous, voyon
 |--|--|--|--|--|--|
 |value|(voir plus haut)|Non|La valeur à affiché (ou la récursive)|"Montpellier"|∅
 |span|Integer|Oui|Espace occupée par l'**item** en fonction de la somme de tous les **span** du tableau **items**. Ainsi, si un **item** à pour **span** 3 et un autre **item** à pour **span** 1, le premier **item** occupera 75% de l'espace tandis que le second en occupera 25.|3|1
-|link|String|Oui|Lien de redirection en cas de clic sur l'**item**|[https://fr.wikipedia.org/wiki/Hello_world](https://fr.wikipedia.org/wiki/Hello_world) |∅
+|link|String|Oui|Lien de redirection en cas de clic sur l'**item**|[https://fr.wikipedia.org/wiki/Hello_world](https://fr.wikipedia.org/wiki/Hello_world)|∅
 
 Et voilà ! C'est enfin terminé ! Vous avez correctement remplis **jsonResponse** ! Il ne vous reste plus qu'à profiter de votre tout nouveau **Widget**.
 
+## Rapide tour de l'architecture
+Pour conclure cette documentation, je vous propose un rapide tour de l'architecture générale du projet sous forme d'un graphique.
+
+![enter image description here](https://i.screenshot.net/k3xo4a9)
