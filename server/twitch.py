@@ -97,7 +97,7 @@ def streamer_followers():
 @twitch_page.route('/twitch/moderators_events', methods=["POST"])
 def moderators_events():
     params = json.loads(dict(request.form)["params"])
-    userId = dict(request.form)["userId"][0]
+    userId = dict(request.form)["userId"]
     accessToken = app.getServiceAccesToken(userId, "twitch")
     jsonResponse = {
         "direction": "column",
@@ -142,7 +142,7 @@ def moderators_events():
 @twitch_page.route('/twitch/ban_events', methods=["POST"])
 def ban_events():
     params = json.loads(dict(request.form)["params"])
-    userId = dict(request.form)["userId"][0]
+    userId = dict(request.form)["userId"]
     accessToken = app.getServiceAccesToken(userId, "twitch")
     jsonResponse = {
         "direction": "column",

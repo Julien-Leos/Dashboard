@@ -31,7 +31,7 @@ def oauth2():
 @intra_epitech_page.route('/intra_epitech/unregistered_instances', methods=["POST"])
 def unregistered_instances():
     params = json.loads(dict(request.form)["params"])
-    userId = dict(request.form)["userId"][0]
+    userId = dict(request.form)["userId"]
     accessToken = app.getServiceAccesToken(userId, "intra_epitech")
     jsonResponse = {
         "direction": "column",
@@ -65,7 +65,7 @@ def unregistered_instances():
 @intra_epitech_page.route('/intra_epitech/binome_projects', methods=["POST"])
 def binome_projects():
     params = json.loads(dict(request.form)["params"])
-    userId = dict(request.form)["userId"][0]
+    userId = dict(request.form)["userId"]
     accessToken = app.getServiceAccesToken(userId, "intra_epitech")
     jsonResponse = {
         "direction": "column",
@@ -96,7 +96,7 @@ def binome_projects():
 @intra_epitech_page.route('/intra_epitech/year_grades', methods=["POST"])
 def year_grades():
     params = json.loads(dict(request.form)["params"])
-    userId = dict(request.form)["userId"][0]
+    userId = dict(request.form)["userId"]
     accessToken = app.getServiceAccesToken(userId, "intra_epitech")
     jsonResponse = {
         "direction": "column",
@@ -131,7 +131,7 @@ def year_grades():
 @intra_epitech_page.route('/intra_epitech/netsoul', methods=["POST"])
 def netsoul():
     params = json.loads(dict(request.form)["params"])
-    userId = dict(request.form)["userId"][0]
+    userId = dict(request.form)["userId"]
     accessToken = app.getServiceAccesToken(userId, "intra_epitech")
     jsonResponse = {
         "direction": "column",
@@ -204,7 +204,7 @@ def netsoul():
 @intra_epitech_page.route('/intra_epitech/activities', methods=["POST"])
 def activities():
     params = json.loads(dict(request.form)["params"])
-    userId = dict(request.form)["userId"][0]
+    userId = dict(request.form)["userId"]
     accessToken = app.getServiceAccesToken(userId, "intra_epitech")
     jsonResponse = {
         "direction": "column",
