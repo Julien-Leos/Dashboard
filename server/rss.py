@@ -13,7 +13,7 @@ rss_page = Blueprint('rss_page', __name__)
 
 @rss_page.route('/rss/article_list', methods=["POST"])
 def article_list():
-    params = json.loads(dict(request.form)["params"][0])
+    params = json.loads(dict(request.form)["params"])
     jsonResponse = {
         "direction": "column",
         "items": []

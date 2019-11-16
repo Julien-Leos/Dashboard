@@ -30,7 +30,7 @@ def oauth2():
 
 @twitch_page.route('/twitch/stream_viewers', methods=["POST"])
 def stream_viewers():
-    params = json.loads(dict(request.form)["params"][0])
+    params = json.loads(dict(request.form)["params"])
     jsonResponse = {
         "direction": "column",
         "items": [{"value": params["streamer"]}]
@@ -45,7 +45,7 @@ def stream_viewers():
 
 @twitch_page.route('/twitch/best_streams_for_game', methods=["POST"])
 def best_streams_for_game():
-    params = json.loads(dict(request.form)["params"][0])
+    params = json.loads(dict(request.form)["params"])
     jsonResponse = {
         "direction": "column",
         "items": [
@@ -78,7 +78,7 @@ def best_streams_for_game():
 
 @twitch_page.route('/twitch/streamer_followers', methods=["POST"])
 def streamer_followers():
-    params = json.loads(dict(request.form)["params"][0])
+    params = json.loads(dict(request.form)["params"])
     jsonResponse = {
         "direction": "column",
         "items": [{"value": params["streamer"]}]
@@ -96,7 +96,7 @@ def streamer_followers():
 
 @twitch_page.route('/twitch/moderators_events', methods=["POST"])
 def moderators_events():
-    params = json.loads(dict(request.form)["params"][0])
+    params = json.loads(dict(request.form)["params"])
     userId = dict(request.form)["userId"][0]
     accessToken = app.getServiceAccesToken(userId, "twitch")
     jsonResponse = {
@@ -141,7 +141,7 @@ def moderators_events():
 
 @twitch_page.route('/twitch/ban_events', methods=["POST"])
 def ban_events():
-    params = json.loads(dict(request.form)["params"][0])
+    params = json.loads(dict(request.form)["params"])
     userId = dict(request.form)["userId"][0]
     accessToken = app.getServiceAccesToken(userId, "twitch")
     jsonResponse = {

@@ -34,7 +34,7 @@ def oauth2():
 
 @yammer_page.route('/yammer/group_message', methods=["POST"])
 def group_message():
-    params = json.loads(dict(request.form)["params"][0])
+    params = json.loads(dict(request.form)["params"])
     userId = dict(request.form)["userId"][0]
     accessToken = app.getServiceAccesToken(userId, "yammer")
     jsonResponse = {
@@ -60,7 +60,7 @@ def group_message():
 
 @yammer_page.route('/yammer/group_list', methods=["POST"])
 def group_list():
-    params = json.loads(dict(request.form)["params"][0])
+    params = json.loads(dict(request.form)["params"])
     userId = dict(request.form)["userId"][0]
     accessToken = app.getServiceAccesToken(userId, "yammer")
     jsonResponse = {
